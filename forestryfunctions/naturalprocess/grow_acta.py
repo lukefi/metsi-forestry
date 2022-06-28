@@ -59,7 +59,7 @@ def yearly_height_growth_by_species(
     return growth_percent
 
 
-def grow_diameter_and_height(matures_trees: List[ReferenceTree], years: int = 5):
+def grow_diameter_and_height(matures_trees: List[ReferenceTree], years: int = 5) -> List[ReferenceTree]:
     """ Diameter and height growth for trees with height > 1.3 meters. Based on Acta Forestalia Fennica 163. """
     basal_area_total = futil.calculate_attribute_sum(matures_trees, futil.calculate_basal_area)
     dominant_height = futil.solve_dominant_height(matures_trees)
@@ -101,3 +101,16 @@ def grow_diameter_and_height(matures_trees: List[ReferenceTree], years: int = 5)
                 growth_percent_height,
                 years)
     return matures_trees
+
+
+def grow_saplings(saplings: List[ReferenceTree]) -> List[ReferenceTree]:
+    """ Hotfix for sapling height and diameter growth """
+    for sapling in saplings:
+        if sapling.height < 1.3:
+            sapling.height += 0.3
+        if sapling.height >= 1.3:
+            sapling.breast_height_diameter = (1.0
+                                              if sapling.breast_height_diameter in (0.0, None)
+                                              else sapling.breast_height_diameter)
+            sapling.sapling = False
+    return saplings
