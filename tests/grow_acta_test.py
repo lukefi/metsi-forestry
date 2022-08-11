@@ -67,12 +67,12 @@ class GrowActaTest(unittest.TestCase):
             for d, h, f, spe, age in zip(diameters, heights, stems, species, ages)
         ]
         result = grow_acta.grow_diameter_and_height(reference_trees)
-        self.assertEqual(21.6013, round(result[0].breast_height_diameter, 4))
-        self.assertEqual(24.2168, round(result[0].height, 4))
-        self.assertEqual(22.9472, round(result[1].breast_height_diameter, 4))
-        self.assertEqual(24.5899, round(result[1].height, 4))
-        self.assertEqual(23.6670, round(result[2].breast_height_diameter, 4))
-        self.assertEqual(26.2243, round(result[2].height, 4))
+        self.assertEqual(21.5922, round(result[0].breast_height_diameter, 4))
+        self.assertEqual(24.2359, round(result[0].height, 4))
+        self.assertEqual(22.9209, round(result[1].breast_height_diameter, 4))
+        self.assertEqual(24.443, round(result[1].height, 4))
+        self.assertEqual(23.6697, round(result[2].breast_height_diameter, 4))
+        self.assertEqual(26.2199, round(result[2].height, 4))
 
     def test_grow_sapling(self):
         diameters = [1.0, 1.1, 1.2, None]
