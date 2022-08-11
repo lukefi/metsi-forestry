@@ -1,6 +1,7 @@
 from typing import Tuple, Callable
 from forestdatamodel.model import ForestStand
 
+
 def iterative_thinning(
         stand: ForestStand,
         thinning_factor: float,
@@ -16,18 +17,34 @@ def iterative_thinning(
     :param thinning_factor: Intensity of the thinning on each iteration
     :param thin_predicate: Condition to stop thinning
     :param extra_factor_solver: Gradually increasing proportion of removal
-    :retuns: Thinned stand and number of removed stems
+    :param time_point: Time point of thinning
+    :returns: Thinned stand and number of removed stems per reference tree at the given time point
     """
     n = len(stand.reference_trees)
     c = thinning_factor
-    stems_removed = 0.0
+
+    #initialises the thinning_output dictionary where stems_removed_per_ha is aggregated to during the thinning operation
+    thinning_output = {
+        rt.identifier: 
+            {
+                'stems_removed_per_ha': 0.0,
+                'species': rt.species,
+                'breast_height_diameter': rt.breast_height_diameter,
+                'height': rt.height,
+                'stems_per_ha': rt.stems_per_ha,
+                'stand_area': stand.area,
+            } 
+            for rt in stand.reference_trees
+        }
+
     while thin_predicate(stand):
         # cut until lower bound reached
         for i, rt in enumerate(stand.reference_trees):
             thin_factor = c + extra_factor_solver(i, n, c)
             thin_factor = 1.0 if thin_factor > 1.0 else thin_factor
             new_stems_per_ha = rt.stems_per_ha * thin_factor
-            stems_removed += rt.stems_per_ha - new_stems_per_ha
+            thinning_output[rt.identifier]["stems_removed_per_ha"] += rt.stems_per_ha - new_stems_per_ha
             rt.stems_per_ha = new_stems_per_ha
-    new_aggregate = { 'stems_removed': stems_removed }
+
+    new_aggregate = {'thinning_output': thinning_output}
     return (stand, new_aggregate)
