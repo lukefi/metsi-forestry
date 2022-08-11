@@ -63,7 +63,9 @@ def grow_diameter_and_height(matures_trees: List[ReferenceTree], years: int = 5)
     """ Diameter and height growth for trees with height > 1.3 meters. Based on Acta Forestalia Fennica 163. """
     basal_area_total = futil.calculate_attribute_sum(matures_trees, futil.calculate_basal_area)
     dominant_height = futil.solve_dominant_height(matures_trees)
-    tree_groups = itertools.groupby(matures_trees, key=lambda rt: rt.species)
+    tree_groups = itertools.groupby(
+        sorted(matures_trees, key=lambda rt: rt.species),
+        key=lambda rt: rt.species)
     # Calculate growth for each tree species
     for _, tree_group in tree_groups:
         trees = list(tree_group)
