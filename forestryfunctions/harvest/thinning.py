@@ -6,7 +6,7 @@ def iterative_thinning(
         stand: ForestStand,
         thinning_factor: float,
         thin_predicate: Callable,
-        extra_factor_solver: Callable,
+        extra_factor_solver: Callable
 ) -> Tuple[ForestStand, dict]:
     """ Iteratively decreases the stem count of stand reference trees until stoppin condition is met.
 
@@ -22,7 +22,6 @@ def iterative_thinning(
     """
     n = len(stand.reference_trees)
     c = thinning_factor
-    # stems_removed = 0.0
 
     #initialises the thinning_output dictionary where stems_removed_per_ha is aggregated to during the thinning operation
     thinning_output = {
@@ -47,14 +46,5 @@ def iterative_thinning(
             thinning_output[rt.identifier]["stems_removed_per_ha"] += rt.stems_per_ha - new_stems_per_ha
             rt.stems_per_ha = new_stems_per_ha
 
-            
-            
-            #NOTE: some considerations to address before merging
-            # 1. Will collecting this data on per-reference_tree basis be a memory issue when running the sim with a full dataset?
-            # 2. I'd also rather make thinning_output a class imported from the forest-data-model library.
-            # 3. I'm currently assuming that since the new_aggregate is written per thinning_method and per time_point, 
-            #  the thinning_output will not be written to twice (otherwise would need to accommodate it for updates)
-    
-    # this structure is currently stored in operation_aggregates separately for each thinning method and for each timing.
     new_aggregate = {'thinning_output': thinning_output}
     return (stand, new_aggregate)
