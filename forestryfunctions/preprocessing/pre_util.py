@@ -29,15 +29,3 @@ def supplement_mean_diameter(stratum: TreeStratum) -> TreeStratum:
     diameter_factor = 1.2
     stratum.mean_diameter = stratum.mean_height * diameter_factor
     return stratum
-
-
-def is_living_tree(tree: ReferenceTree) -> bool:
-    return tree.is_living()
-
-
-def stand_is_proper_forestland(stand: ForestStand) -> bool:
-    return stand.is_forest_land() and not stand.is_other_excluded_forest()
-
-
-def stand_is_empty_auxiliary_stand(stand: ForestStand) -> bool:
-    return stand.is_auxiliary() and not stand.has_trees() and not stand.has_strata()
