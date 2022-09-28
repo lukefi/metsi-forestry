@@ -1,6 +1,8 @@
 from typing import Tuple, Callable
 from forestdatamodel.model import ForestStand
 
+from forestryfunctions.harvest.cross_cutting import calculate_cross_cut_aggregates, cross_cut_thinning_output
+
 
 def iterative_thinning(
         stand: ForestStand,
@@ -46,5 +48,10 @@ def iterative_thinning(
             thinning_output[rt.identifier]["stems_removed_per_ha"] += rt.stems_per_ha - new_stems_per_ha
             rt.stems_per_ha = new_stems_per_ha
 
-    new_aggregate = {'thinning_output': thinning_output}
+
+    volumes, values = cross_cut_thinning_output(thinning_output)
+    total_volume, total_value = calculate_cross_cut_aggregates(volumes, values)
+
+
+    new_aggregate = {'cross_cut_result': {"volume": total_volume, "value": total_value}}
     return (stand, new_aggregate)
