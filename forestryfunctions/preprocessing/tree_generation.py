@@ -76,7 +76,6 @@ def solve_reference_tree_count(stratum: TreeStratum, value: Optional[int]) -> Op
         return value
 
 
-
 def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
     """ Composes N number of reference trees based on values of the stratum.
 
@@ -100,7 +99,7 @@ def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[in
     elif strategy == TreeStrategy.WEIBULL_DISTRIBUTION:
         result = trees_from_weibull(stratum, n_trees)
     elif strategy == TreeStrategy.HEIGHT_DISTRIBUTION:
-        result = distributions.simple_height_distribution(stratum, n_trees)
+        result = distributions.reference_trees_from_height_distribution(stratum, n_trees) 
     elif strategy == TreeStrategy.SKIP:
         return []
     else:
