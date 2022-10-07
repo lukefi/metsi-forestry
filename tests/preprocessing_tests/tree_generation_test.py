@@ -70,12 +70,11 @@ class TestTreeGeneration(unittest.TestCase):
             self.Input(None, 10.0, 33.0, 8.0, None, None, None, None, None), # --> weibull distribution
             # mean_diameter=10.0;
             # mean_height=8.0;
-            # stem_count=55.0
-            self.Input(None, 10.0, None, 8.0, None, None, None, 55.0, None), # --> height distribution
-            # mean_diameter=1.0;
-            # mean_height=1.3;
-            # sapling_stem_count=120.0
-            self.Input(None,  1.0,  None,  1.3,  None,  None, None, None, 120.0), # --> sapling tree generation
+            # stems_per_ha=55.0
+            self.Input(None, 10.0, None, 8.0, None, None, None, 55.0, None), # --> sapling weibull distribution (big trees)
+            # mean_height=1.2;
+            # sapling_stems_per_ha=111.0
+            self.Input(None, None, None, 1.2, None, None, None, None, 111.0), # --> sapling weibull distribution (small trees)
             # all values None
             self.Input(None, None, None,  None,  None,  None, None, None, None) # --> Skip tree generation
         ]
@@ -83,8 +82,8 @@ class TestTreeGeneration(unittest.TestCase):
 
         expected_values = [
             tree_generation.TreeStrategy.WEIBULL_DISTRIBUTION,
-            tree_generation.TreeStrategy.HEIGHT_DISTRIBUTION,
-            tree_generation.TreeStrategy.SAPLING_TREE,
+            tree_generation.TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION,
+            tree_generation.TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION,
             tree_generation.TreeStrategy.SKIP,
         ]
 
