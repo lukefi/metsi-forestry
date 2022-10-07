@@ -81,6 +81,7 @@ def weibull(n_samples: int, diameter: float, basal_area: float, height: float, m
 
 # ---- Simple height distribution model ----
 
+# NOTE: debricated only for test purposes
 def simple_height_distribution(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree]:
     """ Generate N trees from tree stratum.
 
@@ -105,14 +106,15 @@ def reference_trees_from_height_distribution(stratum: TreeStratum, n_trees: Opti
     Hdom = 0.0
     result = []
     result = WpituusNOtos(stratum.species,stratum.mean_height,stratum.mean_diameter,stratum.stems_per_ha,Hdom,n_trees)
+    return result
 
-def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]: 
+def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]:
     """Formulates height distribution of sapling stratum and predicts the diameters and the number of stems of the simulation trees
-    References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands. 
+    References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
                 Forest Ecology and management 257: 223–232. (GLM model)
     param: pl: tree species
     param: H: mean height
-    param: D: mean diameter at breast height 
+    param: D: mean diameter at breast height
     param: N: stem number
     param: Hdom: Dominant height
     param: n_trees: The number of simulation trees in tree stratum
@@ -134,7 +136,7 @@ def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: 
 # Sapling diameters are predicted
     for i, reference_tree in enumerate(result):
 #    for reference_tree in result:
-#        reference_tree = ReferenceTree() 
+#        reference_tree = ReferenceTree()
         i=i+1
         if reference_tree.height <= 1.300:
             reference_tree.breast_height_diameter =0.0
@@ -153,10 +155,10 @@ def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: 
     return result
 
 
-def Weib_sapling(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]: 
+def Weib_sapling(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]:
     """Formulates weibull height distribution of sapling stratum and the number of stems of the simulation trees
     References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
-                Forest Ecology and management 257: 223–232. (GLM model)    
+                Forest Ecology and management 257: 223–232. (GLM model)
     """
 
 # Mean diameter and dominant height can be illogical:
@@ -165,35 +167,35 @@ def Weib_sapling(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: 
 
     Ph = 0
     Nh = 0
- 
+
 # Weibull parameters Generalized Linear Model (look Cao 2004)
-# With GLM model, fitting the distribution to treewise data and 
+# With GLM model, fitting the distribution to treewise data and
 # the solution of parameters of the prediction model are done at the same time
     a = 0.0
- 
+
     b0 = 0.1942
     b1 = 0.9971
     b2 = -0.0580
- 
+
     c0 = -2.4203
     c1 = 0.0895
     c2 = -0.0637
     c3 = 0.2510
     c4 = 1.2707
- 
+
 # KHar Error correction: Siipilehto 2009, Forest ecology...  p. 8, formula 6
 # Height H pmust be logarithmic.
     b = math.exp(b0 + b1 * math.log(H) + b2 / math.log(Hdom/H + 0.4))
     c = math.exp(c0 + c1 * H + c2 * Hdom + c3 * math.log(N) + c4 / math.log(Hdom / H + 0.4))
- 
+
 # Weibull height distribution is known, trees are picked up from the distribution
     classN = 1 / float(n_trees)    # stem number from class border
     Nh = N / float(n_trees)        # frequency
-    classH = classN / 2          # for the class center 
+    classH = classN / 2          # for the class center
     result=[]
 
     for i in range(n_trees):
-        reference_tree = ReferenceTree()    
+        reference_tree = ReferenceTree()
         Ph = float(i+1) * classN - classH         # class center
         hi = b * (-math.log(1.0 - Ph))**(1.0 / c) + a   # picking up height from the cumulative Weibull distribution. Analytical solution.
         reference_tree.height = hi
