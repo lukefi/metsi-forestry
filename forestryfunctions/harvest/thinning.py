@@ -1,7 +1,6 @@
 from typing import Tuple, Callable
 from forestdatamodel.model import ForestStand
-
-from forestryfunctions.harvest.cross_cutting import calculate_cross_cut_aggregates, cross_cut_thinning_output
+from forestryfunctions.cross_cutting.cross_cutting import calculate_cross_cut_aggregates, cross_cut_thinning_output
 
 
 def iterative_thinning(
