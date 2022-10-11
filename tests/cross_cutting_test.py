@@ -25,8 +25,8 @@ class CrossCuttingTest(unittest.TestCase):
 
         volumes, values = cross_cutting.cross_cut_stand(stand)
 
-        self.assertEqual(volumes[0], [12.459322454417418, 0.26732088300923035])
-        self.assertEqual(values[0], [735.1000248106276, 4.544455011156915])
+        self.assertEqual(volumes[0], [12.282591004865342, 0.26400044487502494])
+        self.assertEqual(values[0], [724.6728692870552, 4.4880075628754215])
 
     def test_cross_cut_thinning_output(self):
 
@@ -59,13 +59,15 @@ class CrossCuttingTest(unittest.TestCase):
 
         volumes, values = cross_cutting.cross_cut_thinning_output(thinned_trees)
 
-        self.assertEqual(volumes[0], [0.0, 1.8820884719657113e-06])
-        self.assertEqual(volumes[1], [0.0, 1.566128712970515e-06])
-        self.assertEqual(volumes[2], [1.4419059383590385e-06, 1.3865035819964635e-06])
+        self.assertEqual(volumes[0], [0.0, 1.7820312883923654e-06])
+        self.assertEqual(volumes[1], [0.0, 1.5799273712399437e-06])
+        self.assertEqual(volumes[2], [0.0, 2.970425992903034e-06])
 
-        self.assertEqual(values[0], [0.0, 3.199550402341709e-05])
-        self.assertEqual(values[1], [0.0, 2.662418812049875e-05])
-        self.assertEqual(values[2], [7.930482660974712e-05, 2.357056089393987e-05])
+        self.assertEqual(values[0], [0.0, 3.029453190267021e-05])
+        self.assertEqual(values[1], [0.0, 2.6858765311079042e-05])
+        self.assertEqual(values[2], [0.0, 5.049724187935157e-05])
+
+    
     @parameterized.expand([
         (TreeSpecies.PINE,30,25),
         (TreeSpecies.UNKNOWN_CONIFEROUS, 15.57254199723247, 18.293846547993535),

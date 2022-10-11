@@ -24,7 +24,7 @@ def _cross_cut(
 
     species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
     
-    #the ported cross-cut scripts do not play well with non-ints, thus rounding
+    #the original cross-cut scripts rely on the height being an integer, thus rounding.
     height = round(height)
 
     n = int((height*100)/div-1)
@@ -45,7 +45,6 @@ def _cross_cut_with_r(
 
     species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
     height = round(height)
-    breast_height_diameter = round(breast_height_diameter)
 
     r = r_utils.get_r_with_sourced_scripts()
     result = r["cross_cut"](species_string, breast_height_diameter, height)
@@ -55,15 +54,11 @@ def _cross_cut_with_r(
 
 
 def cross_cut_thinning_output(thinned_trees: Dict[str, Dict], timber_price_table: np.ndarray) -> Tuple[List, List]:
-    
-    #TODO: should the delimiter be parameterised? how to tell the user about the csv format? 
-    # timber_price_table = np.loadtxt(timber_price_table, delimiter=";", skiprows=1)
 
     # these buckets are of size (m, n) where:
         # m is the number of unique timber grades (puutavaralaji) and 
         # n is the count of reference trees in the stand.
     # it's left to the caller to generate aggregates from these.
-
     volumes_bucket = []
     values_bucket = []
 
