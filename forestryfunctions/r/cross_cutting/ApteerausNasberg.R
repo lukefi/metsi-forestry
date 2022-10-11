@@ -1,4 +1,4 @@
-apt <- function(height, T, P, m, n, div) {
+apt <- function(T, P, m, n, div) {
 
     # Initialize arrays V for storing volumes and C for storing values
     # (...and fill the arrays with zero values)

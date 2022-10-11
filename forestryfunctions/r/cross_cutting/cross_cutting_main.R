@@ -88,7 +88,7 @@ cross_cut <- function(species_string, dbh, height, hkanto=0.1, div=10) {
     T[, 3] <- vhat$vcum # cumulative volume by pieces
 
     # Apteerausaliohjelman kutsu
-    Apt <- apt(height, T, P, m, n, div)
+    Apt <- apt(T, P, m, n, div)
 
     return(Apt)
 }
