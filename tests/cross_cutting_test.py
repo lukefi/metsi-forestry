@@ -6,6 +6,12 @@ import numpy as np
 from parameterized import parameterized
 class CrossCuttingTest(unittest.TestCase):
 
+    TIMBER_PRICE_TABLE = np.array(
+                        [[  1., 160., 370.,  55.],
+                        [  1., 160., 400.,  57.],
+                        [  1., 160., 430.,  59.],
+                        [  1., 160., 460.,  59.],
+                        [  2.,  70., 300.,  17.]])
 
     def test_cross_cut_stand_returns_total_values(self):
         """This test ensures that the cross_cut_stand returns values that are multiplied by the reference tree's stem count per ha and the stand area."""
@@ -23,7 +29,7 @@ class CrossCuttingTest(unittest.TestCase):
             area=296.23
         )
 
-        volumes, values = cross_cutting.cross_cut_stand(stand)
+        volumes, values = cross_cutting.cross_cut_stand(stand, self.TIMBER_PRICE_TABLE)
 
         self.assertEqual(volumes[0], [12.282591004865342, 0.26400044487502494])
         self.assertEqual(values[0], [724.6728692870552, 4.4880075628754215])
@@ -57,7 +63,7 @@ class CrossCuttingTest(unittest.TestCase):
                         },
         }
 
-        volumes, values = cross_cutting.cross_cut_thinning_output(thinned_trees)
+        volumes, values = cross_cutting.cross_cut_thinning_output(thinned_trees, self.TIMBER_PRICE_TABLE)
 
         self.assertEqual(volumes[0], [0.0, 1.7820312883923654e-06])
         self.assertEqual(volumes[1], [0.0, 1.5799273712399437e-06])

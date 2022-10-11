@@ -84,7 +84,7 @@ def cross_cut_thinning_output(thinned_trees: Dict[str, Dict], timber_price_table
 
 
 
-def cross_cut_stand(stand: ForestStand) -> tuple[List[float], List[float]]:
+def cross_cut_stand(stand: ForestStand, timber_price_table: np.ndarray) -> tuple[List[float], List[float]]:
     """
     Calculates the total volume and value of cross cutting in the :stand:. 
     """
@@ -101,6 +101,7 @@ def cross_cut_stand(stand: ForestStand) -> tuple[List[float], List[float]]:
                             tree.species, 
                             tree.breast_height_diameter, 
                             tree.height, 
+                            timber_price_table
                             )
 
         #NOTE: the above 'volumes' and 'values' are calculated for a single reference tree. To report meaningful numbers,

@@ -1,13 +1,14 @@
-from typing import Tuple, Callable
+from typing import Tuple, Callable, List
 from forestdatamodel.model import ForestStand
 from forestryfunctions.cross_cutting.cross_cutting import calculate_cross_cut_aggregates, cross_cut_thinning_output
-
+from numpy import ndarray
 
 def iterative_thinning(
         stand: ForestStand,
         thinning_factor: float,
         thin_predicate: Callable,
-        extra_factor_solver: Callable
+        extra_factor_solver: Callable,
+        timber_price_table: ndarray
 ) -> Tuple[ForestStand, dict]:
     """ Iteratively decreases the stem count of stand reference trees until stoppin condition is met.
 
@@ -47,10 +48,8 @@ def iterative_thinning(
             thinning_output[rt.identifier]["stems_removed_per_ha"] += rt.stems_per_ha - new_stems_per_ha
             rt.stems_per_ha = new_stems_per_ha
 
-
-    volumes, values = cross_cut_thinning_output(thinning_output)
+    volumes, values = cross_cut_thinning_output(thinning_output, timber_price_table)
     total_volume, total_value = calculate_cross_cut_aggregates(volumes, values)
-
-
     new_aggregate = {'cross_cut_result': {"volume": total_volume, "value": total_value}}
+    
     return (stand, new_aggregate)
