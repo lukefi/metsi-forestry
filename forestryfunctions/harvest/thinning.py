@@ -7,7 +7,7 @@ def iterative_thinning(
         thinning_factor: float,
         thin_predicate: Callable,
         extra_factor_solver: Callable
-):
+) -> ForestStand:
     """ Iteratively decreases the stem count of stand reference trees until stoppin condition is met.
 
     The parameter :extra_factor_solver: may be used to customize the removal of stems.
@@ -27,3 +27,5 @@ def iterative_thinning(
             thin_factor = c + extra_factor_solver(i, n, c)
             thin_factor = 1.0 if thin_factor > 1.0 else thin_factor
             rt.stems_per_ha *= thin_factor
+
+    return stand
