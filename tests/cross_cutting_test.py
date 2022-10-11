@@ -4,14 +4,9 @@ from forestdatamodel.enums.internal import TreeSpecies
 from forestryfunctions.cross_cutting import cross_cutting
 import numpy as np
 from parameterized import parameterized
-class CrossCuttingTest(unittest.TestCase):
+from test_util import DEFAULT_TIMBER_PRICE_TABLE
 
-    TIMBER_PRICE_TABLE = np.array(
-                        [[  1., 160., 370.,  55.],
-                        [  1., 160., 400.,  57.],
-                        [  1., 160., 430.,  59.],
-                        [  1., 160., 460.,  59.],
-                        [  2.,  70., 300.,  17.]])
+class CrossCuttingTest(unittest.TestCase):
 
     def test_cross_cut_stand_returns_total_values(self):
         """This test ensures that the cross_cut_stand returns values that are multiplied by the reference tree's stem count per ha and the stand area."""
@@ -29,7 +24,7 @@ class CrossCuttingTest(unittest.TestCase):
             area=296.23
         )
 
-        volumes, values = cross_cutting.cross_cut_stand(stand, self.TIMBER_PRICE_TABLE)
+        volumes, values = cross_cutting.cross_cut_stand(stand, DEFAULT_TIMBER_PRICE_TABLE)
 
         self.assertEqual(volumes[0], [12.282591004865342, 0.26400044487502494])
         self.assertEqual(values[0], [724.6728692870552, 4.4880075628754215])
@@ -63,7 +58,7 @@ class CrossCuttingTest(unittest.TestCase):
                         },
         }
 
-        volumes, values = cross_cutting.cross_cut_thinning_output(thinned_trees, self.TIMBER_PRICE_TABLE)
+        volumes, values = cross_cutting.cross_cut_thinning_output(thinned_trees, DEFAULT_TIMBER_PRICE_TABLE)
 
         self.assertEqual(volumes[0], [0.0, 1.7820312883923654e-06])
         self.assertEqual(volumes[1], [0.0, 1.5799273712399437e-06])
@@ -81,8 +76,8 @@ class CrossCuttingTest(unittest.TestCase):
     ])
     def test_py_implementation_equals_r_implementation(self, species, breast_height_diameter, height):
 
-        py_volumes, py_values = cross_cutting._cross_cut(species, breast_height_diameter, height, self.TIMBER_PRICE_TABLE)
-        r_volumes, r_values = cross_cutting._cross_cut_with_r(species, breast_height_diameter, height, self.TIMBER_PRICE_TABLE)
+        py_volumes, py_values = cross_cutting._cross_cut(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
+        r_volumes, r_values = cross_cutting._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
 
         decimals = 6
         py_volumes = np.around(py_volumes, decimals=decimals)
