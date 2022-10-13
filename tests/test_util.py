@@ -14,3 +14,9 @@ class ConverterTestSuite(unittest.TestCase):
         for case in assertions:
             result = fn(*case[0])
             self.assertEqual(case[1], result)
+
+class TestCaseExtension(unittest.TestCase):
+    def assertListsAlmostEqual(self, first: List, second: List, places: int):
+        self.assertEqual(len(first), len(second))
+        for i in range(len(first)):
+            self.assertAlmostEqual(first[i], second[i], places=places)

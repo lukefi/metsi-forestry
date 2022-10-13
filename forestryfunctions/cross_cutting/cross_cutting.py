@@ -3,6 +3,7 @@ from forestdatamodel.model import ForestStand
 from forestdatamodel.enums.internal import TreeSpecies
 from forestryfunctions.cross_cutting import stem_profile
 import numpy as np
+from forestryfunctions.cross_cutting.model import ThinningOutput
 
 import forestryfunctions.r_utils as r_utils
 
@@ -53,7 +54,7 @@ def _cross_cut_with_r(
 
 
 
-def cross_cut_thinning_output(thinned_trees: Dict[str, Dict], timber_price_table: np.ndarray) -> Tuple[List, List]:
+def cross_cut_thinning_output(thinned_trees: ThinningOutput, stand_area: float, timber_price_table: np.ndarray) -> Tuple[List, List]:
 
     # these buckets are of size (m, n) where:
         # m is the number of unique timber grades (puutavaralaji) and 
@@ -62,18 +63,18 @@ def cross_cut_thinning_output(thinned_trees: Dict[str, Dict], timber_price_table
     volumes_bucket = []
     values_bucket = []
 
-    for tree_id, thinning_data in thinned_trees.items():
+    for thinning_data in thinned_trees.removed:
         volumes, values = _cross_cut(
-                            thinning_data['species'],
-                            thinning_data['breast_height_diameter'],
-                            thinning_data['height'],
+                            thinning_data.species,
+                            thinning_data.breast_height_diameter,
+                            thinning_data.height,
                             timber_price_table
                             )
 
         #NOTE: the above 'volumes' and 'values' are calculated for a single reference tree. 
         # To report absolute (i.e. not in per hectare terms) numbers, they must be multiplied by the reference tree's stems_removed_per_ha and the stand area (in hectares)
         
-        multiplier = thinning_data['stems_removed_per_ha'] * (thinning_data['stand_area']/1000)
+        multiplier = thinning_data.stems_removed_per_ha * stand_area/1000
         volumes = [vol*multiplier for vol in volumes]
         values = [val*multiplier for val in values]
 

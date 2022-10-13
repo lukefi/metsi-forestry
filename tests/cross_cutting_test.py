@@ -2,11 +2,12 @@ import unittest
 from forestdatamodel.model import ForestStand, ReferenceTree
 from forestdatamodel.enums.internal import TreeSpecies
 from forestryfunctions.cross_cutting import cross_cutting
+from forestryfunctions.cross_cutting.model import ThinningOutput, TreeThinData
 import numpy as np
 from parameterized import parameterized
-from test_util import DEFAULT_TIMBER_PRICE_TABLE
+from test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
 
-class CrossCuttingTest(unittest.TestCase):
+class CrossCuttingTest(TestCaseExtension):
 
     def test_cross_cut_stand_returns_total_values(self):
         """This test ensures that the cross_cut_stand returns values that are multiplied by the reference tree's stem count per ha and the stand area."""
@@ -30,43 +31,40 @@ class CrossCuttingTest(unittest.TestCase):
         self.assertEqual(values[0], [724.6728692870552, 4.4880075628754215])
 
     def test_cross_cut_thinning_output(self):
+        stand_area = 1.93
+        thinned_trees = ThinningOutput(
+                            removed= [
+                                TreeThinData(
+                                    stems_removed_per_ha = 0.006261167484111818,
+                                    species = TreeSpecies.UNKNOWN_CONIFEROUS,
+                                    breast_height_diameter = 15.57254199723247,
+                                    height = 18.293846547993535,
+                                ),
+                                TreeThinData(
+                                    stems_removed_per_ha = 0.003917869416142222,
+                                    species = TreeSpecies.PINE,
+                                    breast_height_diameter = 16.071397406682646,
+                                    height = 23.617432525999664,
+                                ),
+                                TreeThinData(
+                                    stems_removed_per_ha = 0.008092431491823593,
+                                    species = TreeSpecies.SPRUCE,
+                                    breast_height_diameter = 17.721245087039236,
+                                    height = 16.353742669109522,
+                                )
+                            ]
+                        )
 
-        thinned_trees = {
-            '001-tree': {
-                         'stems_removed_per_ha': 0.006261167484111818,
-                         'species': TreeSpecies.UNKNOWN_CONIFEROUS,
-                         'breast_height_diameter': 15.57254199723247,
-                         'height': 18.293846547993535,
-                         'stems_per_ha': 0.2024444153196156,
-                         'stand_area': 1.93
-                         },
-            '002-tree': {
-                        'stems_removed_per_ha':0.003917869416142222,
-                        'species':TreeSpecies.PINE,
-                        'breast_height_diameter':16.071397406682646,
-                        'height':23.617432525999664,
-                        'stems_per_ha':0.131181075968072,
-                        'stand_area':1.93
-                        },
-            '003-tree': {
-                        'stems_removed_per_ha': 0.008092431491823593,
-                        'species': TreeSpecies.SPRUCE,
-                        'breast_height_diameter':17.721245087039236,
-                        'height':16.353742669109522,
-                        'stems_per_ha':0.2809229789304476,
-                        'stand_area':1.93
-                        },
-        }
+        volumes, values = cross_cutting.cross_cut_thinning_output(thinned_trees, stand_area, DEFAULT_TIMBER_PRICE_TABLE)
 
-        volumes, values = cross_cutting.cross_cut_thinning_output(thinned_trees, DEFAULT_TIMBER_PRICE_TABLE)
+        self.assertListsAlmostEqual(volumes[0], [0.0, 1.7820312883923654e-06], places=6)
+        self.assertListsAlmostEqual(volumes[1], [0.0, 1.5799273712399437e-06], places=6)
+        self.assertListsAlmostEqual(volumes[2], [0.0, 2.970425992903034e-06], places=6)
 
-        self.assertEqual(volumes[0], [0.0, 1.7820312883923654e-06])
-        self.assertEqual(volumes[1], [0.0, 1.5799273712399437e-06])
-        self.assertEqual(volumes[2], [0.0, 2.970425992903034e-06])
+        self.assertListsAlmostEqual(values[0], [0.0, 3.029453190267021e-05], places=6)
+        self.assertListsAlmostEqual(values[1], [0.0, 2.6858765311079042e-05], places=6)
+        self.assertListsAlmostEqual(values[2], [0.0, 5.049724187935157e-05], places=6)
 
-        self.assertEqual(values[0], [0.0, 3.029453190267021e-05])
-        self.assertEqual(values[1], [0.0, 2.6858765311079042e-05])
-        self.assertEqual(values[2], [0.0, 5.049724187935157e-05])
 
     
     @parameterized.expand([
