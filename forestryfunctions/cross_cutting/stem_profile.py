@@ -2,25 +2,27 @@ from forestryfunctions.cross_cutting.taper_curves import TAPER_CURVES
 import numpy as np
 from scipy import integrate
 
-def _taper_curve_correction(d, h, sp) -> np.ndarray:
+def _taper_curve_correction(d: float, h: int, sp: str) -> np.ndarray:
 
     """
-     Korjausyhtälöt
-     erikseen silloin, jos on tiedossa d6
-     nyt koodattu vain tapaus jossa d6 ei ole tiedossa
-     VMItä varten tarvitaan molemmat
+    This function has been ported from, and should be updated according to, the R implementation.
+    
+    Korjausyhtälöt
+    erikseen silloin, jos on tiedossa d6
+    nyt koodattu vain tapaus jossa d6 ei ole tiedossa
+    VMItä varten tarvitaan molemmat
 
-     Alkuperäinen koodi Snellman crkd.f 
+    Alkuperäinen koodi Snellman crkd.f 
 
-     Aliohjelma muodostaa p-vektorin d:n ja h:n avulla laskettavalle
-     runkokäyrälle. Korjauspolynomi b on laskettava siten, että
-        b(0)    =  0         latva
-        b(p(1)) =  0         0.1*h
-        b(p(2)) =  p(3)      0.4*h
-        b(p(4)) =  p(5)      0.7*h
-     d on rinnankorkeusläpimitta (cm). Koska b:n
-     arvo rinnankorkeusläpimittapisteessä ei ole 0 voidaan (d20)
-     laskea vasta runkokäyräkorjauksen jälkeen!
+    Aliohjelma muodostaa p-vektorin d:n ja h:n avulla laskettavalle
+    runkokäyrälle. Korjauspolynomi b on laskettava siten, että
+    b(0)    =  0         latva
+    b(p(1)) =  0         0.1*h
+    b(p(2)) =  p(3)      0.4*h
+    b(p(4)) =  p(5)      0.7*h
+    d on rinnankorkeusläpimitta (cm). Koska b:n
+    arvo rinnankorkeusläpimittapisteessä ei ole 0 voidaan (d20)
+    laskea vasta runkokäyräkorjauksen jälkeen!
     """
     dh = d / (h-1.3)
     dh2 = dh**2
@@ -106,8 +108,10 @@ def _taper_curve_correction(d, h, sp) -> np.ndarray:
 
     return p
 
-def _cpoly3(p) -> np.ndarray:
+def _cpoly3(p: np.ndarray) -> np.ndarray:
     """
+    This function has been ported from, and should be updated according to, the R implementation.
+
     ohjelma laskee korjauspolynomin  y = b(1)*x + b(2)*x**2 + b(3)*x**3
     kertoimet siten, ett[ polynomi kulkee seuraavan neljän pisteen kautta:
         x1 = p[1] = (h-1.3)/h  (rinnankorkeus)   y(x1) = 0
@@ -126,8 +130,10 @@ def _cpoly3(p) -> np.ndarray:
 
     return b
 
-def _dhat(h, height, coef):
+def _dhat(h: np.ndarray, height: int, coef: np.ndarray) -> np.ndarray:
     """
+    This function has been ported from, and should be updated according to, the R implementation.
+    
     oletus on, että malli on korjattu korjausmallilla
     jolloin käytetty d on dbh  ja f = d20hat*fb (Laasasenaho 33.3)
     ja malli antaa suoraan läpimitan
@@ -138,7 +144,11 @@ def _dhat(h, height, coef):
 
     return dhat
 
-def _crkt(h, height, coef):
+def _crkt(h: float, height: int, coef: np.ndarray) -> float:
+    """
+    This function has been ported from, and should be updated according to, the R implementation.
+    """
+
     # olkoon hx pisteen x etäisyys maanpinnan tasosta (hx:n laatu: m).
     # funktio laskee suhteen  dx / d80  missä dx on läpimitta pisteessä x    
     # ja d80 on läpimitta pisteessä, jonka etäisyys latvasta on 0.8*h.
@@ -152,7 +162,11 @@ def _crkt(h, height, coef):
 
     return crkt
 
-def _ghat(h, height, coef):
+def _ghat(h: float, height: int, coef: np.ndarray) -> float:
+    """
+    This function has been ported from, and should be updated according to, the R implementation
+    """
+
     #lasketaan suhteellinen läpimitta korkeudella hx
     # x on suhteellinen korkeus latvasta
     x = (height-h)/height
@@ -163,7 +177,10 @@ def _ghat(h, height, coef):
     d = d/100
     return (d**2)*np.pi/4
 
-def _volume(hkanto, dbh, height, coeff):
+def _volume(hkanto: float, dbh: float, height: int, coeff: np.ndarray) -> tuple[np.ndarray]:
+    """
+    This function has been ported from, and should be updated according to, the R implementation.
+    """
     h = np.arange(hkanto, height, 0.1) # len=259 whereas in R it's 250 (arange is exclusive on the upper bound)
     if h[-1] < height: #this will be true here, but not in R
         h = np.append(h, height)
@@ -180,8 +197,10 @@ def _volume(hkanto, dbh, height, coeff):
 
     return (v_cum, d_piece, h_piece)
 
-def create_tree_stem_profile(species_string, dbh, height, n, hkanto=0.1, div=10):
-
+def create_tree_stem_profile(species_string: str, dbh: float, height: int, n: int, hkanto: float=0.1, div: int=10) -> np.ndarray:
+    """
+    This function has been ported from, and should be updated according to, the R implementation.
+    """
     taper_curve = TAPER_CURVES.get(species_string, "birch")
     coefs = np.array(list(taper_curve["climbed"].values()))
 

@@ -21,7 +21,7 @@ def _cross_cut(
         height: float, 
         timber_price_table,
         div = 10
-        ) -> dict:
+        ) -> tuple[np.ndarray, np.ndarray]:
 
     species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
     
@@ -124,7 +124,10 @@ def calculate_cross_cut_aggregates(volumes: List[List[float]], values: List[List
     return (total_volume, total_value)
 
 
-def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m:int, n:int, div:int):
+def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) -> tuple[np.ndarray, np.ndarray]:
+    """
+    This function has been ported from, and should be updated according to, the R implementation.
+    """
     
     # define some local variables
     V = np.zeros(n)
