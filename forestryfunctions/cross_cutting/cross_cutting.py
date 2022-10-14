@@ -55,11 +55,14 @@ def _cross_cut_with_r(
 
 
 def cross_cut_thinning_output(thinned_trees: ThinningOutput, stand_area: float, timber_price_table: np.ndarray) -> Tuple[List, List]:
-
-    # these buckets are of size (m, n) where:
-        # m is the number of unique timber grades (puutavaralaji) and 
-        # n is the count of reference trees in the stand.
-    # it's left to the caller to generate aggregates from these.
+    """
+    Calculates the total volume and value of cross cutting the :thinned_trees:. 
+    Returns a tuple of (volumes, values) where volumes and values are lists of floats.
+    These lists are of size `(m, n)` where
+       `m` is the number of unique timber grades (puutavaralaji) and 
+        `n` is the count of cut reference trees.
+    it's left to the caller to generate aggregates from these.
+    """
     volumes_bucket = []
     values_bucket = []
 
@@ -87,13 +90,13 @@ def cross_cut_thinning_output(thinned_trees: ThinningOutput, stand_area: float, 
 
 def cross_cut_stand(stand: ForestStand, timber_price_table: np.ndarray) -> tuple[List[float], List[float]]:
     """
-    Calculates the total volume and value of cross cutting in the :stand:. 
+    Calculates the volume and value of cross cutting all the reference trees in the :stand:. 
+    Returns a tuple of (volumes, values) where volumes and values are lists of floats.
+    These lists are of size `(m, n)` where
+       `m` is the number of unique timber grades (puutavaralaji) and 
+        `n` is the count of cut reference trees.
+    it's left to the caller to generate aggregates from these.
     """
-
-    # these buckets are of size (m, n) where:
-        # m is the number of unique timber grades (puutavaralaji) and 
-        # n is the count of reference trees in the stand.
-    # it's left to the caller to generate aggregates from these.
     volumes_bucket = []
     values_bucket = []
 
@@ -107,7 +110,7 @@ def cross_cut_stand(stand: ForestStand, timber_price_table: np.ndarray) -> tuple
 
         #NOTE: the above 'volumes' and 'values' are calculated for a single reference tree. To report meaningful numbers,
         # they must be multiplied by the reference tree's stem count per ha and the stand area (in hectares)
-        multiplier = tree.stems_per_ha * (stand.area/1000) #area is given in square meters, thus need to convert to ha.
+        multiplier = tree.stems_per_ha * stand.area/1000 #area is given in square meters, thus need to convert to ha.
         volumes = [vol*multiplier for vol in volumes] 
         values = [val*multiplier for val in values]
 
@@ -117,7 +120,6 @@ def cross_cut_stand(stand: ForestStand, timber_price_table: np.ndarray) -> tuple
     return (volumes_bucket, values_bucket)
 
 def calculate_cross_cut_aggregates(volumes: List[List[float]], values: List[List[float]]) -> Any:
-    # would math.fsum work better for floats?
     total_volume = sum(map(sum, volumes))
     total_value = sum(map(sum, values))
 
@@ -128,8 +130,6 @@ def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) ->
     """
     This function has been ported from, and should be updated according to, the R implementation.
     """
-    
-    # define some local variables
     V = np.zeros(n)
     C = np.zeros(n)
     A = np.zeros(n)
@@ -146,7 +146,7 @@ def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) ->
     for i in range(n): #iterate over div-length segmnents of the tree trunk
         for j in range(m): #iterate over the number of timber assortment price classes (row count in puutavaralajimaarittelyt.txt)
 
-            #numpy array indexing: 1st row 2nd element: arr[0, 1]
+            # numpy array indexing: 1st row 2nd element: arr[0, 1]
             # in R it's the same order: arr[2, 3] --> the item on 2nd row and 3rd column
             # but whereas R-indexing is one-based, Python's is zero-based --> indexing has been offset by one
             t = int(i + P[j,2] / div)

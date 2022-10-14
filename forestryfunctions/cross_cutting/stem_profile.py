@@ -3,35 +3,14 @@ import numpy as np
 from scipy import integrate
 
 def _taper_curve_correction(d: float, h: int, sp: str) -> np.ndarray:
-
     """
     This function has been ported from, and should be updated according to, the R implementation.
-    
-    Korjausyhtälöt
-    erikseen silloin, jos on tiedossa d6
-    nyt koodattu vain tapaus jossa d6 ei ole tiedossa
-    VMItä varten tarvitaan molemmat
-
-    Alkuperäinen koodi Snellman crkd.f 
-
-    Aliohjelma muodostaa p-vektorin d:n ja h:n avulla laskettavalle
-    runkokäyrälle. Korjauspolynomi b on laskettava siten, että
-    b(0)    =  0         latva
-    b(p(1)) =  0         0.1*h
-    b(p(2)) =  p(3)      0.4*h
-    b(p(4)) =  p(5)      0.7*h
-    d on rinnankorkeusläpimitta (cm). Koska b:n
-    arvo rinnankorkeusläpimittapisteessä ei ole 0 voidaan (d20)
-    laskea vasta runkokäyräkorjauksen jälkeen!
     """
     dh = d / (h-1.3)
     dh2 = dh**2
     dl = np.log(d)
     hl = np.log(h)
     d2 = d**2
-
-    # lasketaan peruskäyrän arvot t1, t4 ja t7 sekä korjaukset y1, y4 ja y7
-    # korkeuksilla 0.1*h, 0.4*h ja 0.7*h:
 
     if sp=="pine":
         t1 = 1.100553
@@ -95,10 +74,6 @@ def _taper_curve_correction(d: float, h: int, sp: str) -> np.ndarray:
     if np.sign(y7t)!=np.sign(y7):
         y7t = y7t * -1
 
-    # lasketaan p-vektori. korjaukset on laskettu oletuksella b(p(1)) = y1.
-    # koska kuitenkin b(p(1)):n on oltava 0 on korjaukset tehtävä käyrälle
-    # joka saadaan kertomalla oletuskäyrä luvulla (t1+y1)/t1:
-
     p = np.zeros(5)
     p[0] = 0.9
     p[1] = 0.6
@@ -111,15 +86,7 @@ def _taper_curve_correction(d: float, h: int, sp: str) -> np.ndarray:
 def _cpoly3(p: np.ndarray) -> np.ndarray:
     """
     This function has been ported from, and should be updated according to, the R implementation.
-
-    ohjelma laskee korjauspolynomin  y = b(1)*x + b(2)*x**2 + b(3)*x**3
-    kertoimet siten, ett[ polynomi kulkee seuraavan neljän pisteen kautta:
-        x1 = p[1] = (h-1.3)/h  (rinnankorkeus)   y(x1) = 0
-        x2 = p[2] = (h-6)/h    (6 m)             y(x2) = p[3] = dif
-        x3 = p[4]              (tukipiste)       y(x3) = p[5]
-        x4 = 0                 (latva)           y(x4) = 0
-    Alkuperäinen ohjelma Snellman cpoly3.f
-"""
+    """
     con1 = p[2] / (p[1] * (p[1]-p[0]))
     con2 = p[4] / (p[3] * (p[3]-p[0]))
 
@@ -133,10 +100,6 @@ def _cpoly3(p: np.ndarray) -> np.ndarray:
 def _dhat(h: np.ndarray, height: int, coef: np.ndarray) -> np.ndarray:
     """
     This function has been ported from, and should be updated according to, the R implementation.
-    
-    oletus on, että malli on korjattu korjausmallilla
-    jolloin käytetty d on dbh  ja f = d20hat*fb (Laasasenaho 33.3)
-    ja malli antaa suoraan läpimitan
     """
     x = (height-h)/height
     dhat = (x*coef[0]+x**2*coef[1]+x**3*coef[2]+x**5*coef[3]+
@@ -148,13 +111,6 @@ def _crkt(h: float, height: int, coef: np.ndarray) -> float:
     """
     This function has been ported from, and should be updated according to, the R implementation.
     """
-
-    # olkoon hx pisteen x etäisyys maanpinnan tasosta (hx:n laatu: m).
-    # funktio laskee suhteen  dx / d80  missä dx on läpimitta pisteessä x    
-    # ja d80 on läpimitta pisteessä, jonka etäisyys latvasta on 0.8*h.
-    # x = 1-h/height = (height-h)/height    
-    # Snellman alkuperäinen koodi crkt.f!
-
     x = (height-h)/height
 
     crkt = (x*coef[0]+x**2*coef[1]+x**3*coef[2]+x**5*coef[3]+
@@ -166,14 +122,8 @@ def _ghat(h: float, height: int, coef: np.ndarray) -> float:
     """
     This function has been ported from, and should be updated according to, the R implementation
     """
-
-    #lasketaan suhteellinen läpimitta korkeudella hx
-    # x on suhteellinen korkeus latvasta
     x = (height-h)/height
     d = (x*coef[0]+x**2*coef[1]+x**3*coef[2]+x**5*coef[3]+x**8*coef[4]+x**13*coef[5]+x**21*coef[6]+x**34*coef[7])
-    # oletus on, että malli on korjattu korjausmallilla 
-    # jolloin käytetty d on dbh ja f = d20hat*fb (Laasasenaho 33.3)
-    # ja d on suoraan läpimitta
     d = d/100
     return (d**2)*np.pi/4
 
@@ -204,10 +154,6 @@ def create_tree_stem_profile(species_string: str, dbh: float, height: int, n: in
     taper_curve = TAPER_CURVES.get(species_string, "birch")
     coefs = np.array(list(taper_curve["climbed"].values()))
 
-    # vaihe 1. lasketaan runkokäyrän korjausmalli Joukon vanhalla mallilla
-    # ts. tätä ei ole vielä laskettu uudestaan uudesta aineistosta
-    # tilanteisiin, joissa d6 tunnettu, tarvitaan oma korjausmalli
-    # ensin korjausyhtälön pisteet
     p = _taper_curve_correction(dbh, height, species_string)
 
     b = _cpoly3(p)
@@ -217,16 +163,10 @@ def create_tree_stem_profile(species_string: str, dbh: float, height: int, n: in
     for i in range(3):
         coefnew[i] = coefs[i] + b[i]
 
-    # vaihe 2,  lasketaan ennuste 20% läpimitalle ennustetun runkokäyrän pohjalta
-    # c on suhde dx/d20 tai dx/d80 latvasta katsoen
-    # jolloin d20=dx/c
-    # käytännössä d20=d13/c, jossa c on suhde d13/d20
     hx = 1.3
     c = _crkt(hx, height, coefnew)
     d20 = dbh/c
-    # kun kerrotaan alkuperäinen runkokäyrämalli d20:n ennusteella,
-    # saadaan runkokäyrämalli, joka ennustaa läpimitan tietyllä korkeudella
-    # läpimitan funktiona
+
     coefnew = coefnew * d20
 
     v_cum, d_piece, h_piece = _volume(hkanto, dbh, height, coefnew)
