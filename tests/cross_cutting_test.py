@@ -1,11 +1,14 @@
 import unittest
-from forestdatamodel.model import ForestStand, ReferenceTree
+
+import numpy as np
 from forestdatamodel.enums.internal import TreeSpecies
+from forestdatamodel.model import ForestStand, ReferenceTree
 from forestryfunctions.cross_cutting import cross_cutting
 from forestryfunctions.cross_cutting.model import ThinningOutput, TreeThinData
-import numpy as np
 from parameterized import parameterized
+
 from test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
+
 
 class CrossCuttingTest(TestCaseExtension):
 
@@ -27,8 +30,8 @@ class CrossCuttingTest(TestCaseExtension):
 
         volumes, values = cross_cutting.cross_cut_stand(stand, DEFAULT_TIMBER_PRICE_TABLE)
 
-        self.assertEqual(volumes[0], [12.282591004865342, 0.26400044487502494])
-        self.assertEqual(values[0], [724.6728692870552, 4.4880075628754215])
+        self.assertListsAlmostEqual(volumes[0], [12.282591004865342, 0.26400044487502494], places=6)
+        self.assertListsAlmostEqual(values[0], [724.6728692870552, 4.4880075628754215], places=6)
 
     def test_cross_cut_thinning_output(self):
         stand_area = 1.93
