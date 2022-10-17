@@ -1,7 +1,6 @@
 from typing import Callable
 from forestdatamodel.model import ForestStand
 
-
 def iterative_thinning(
         stand: ForestStand,
         thinning_factor: float,

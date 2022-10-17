@@ -3,6 +3,7 @@ from forestdatamodel.model import ForestStand, ReferenceTree
 from forestdatamodel.enums.internal import TreeSpecies
 from forestryfunctions.harvest import thinning
 from forestryfunctions import forestry_utils as futil
+from test_util import DEFAULT_TIMBER_PRICE_TABLE
 
 class ThinningTest(unittest.TestCase):
 
@@ -10,6 +11,7 @@ class ThinningTest(unittest.TestCase):
         species = [ TreeSpecies(i) for i in [1,2,3] ]
         diameters = [ 20.0 + i for i in range(0, 3) ]
         stems = [ 200.0 + i for i in range(0, 3) ]
+        heights = [ 25.0 + i for i in range(0, 3) ]
         ids = ["tree-1", "tree-2", "tree-3"]
         stand = ForestStand()
         stand.reference_trees = [
