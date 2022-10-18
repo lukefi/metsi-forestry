@@ -1,4 +1,3 @@
-import unittest
 from forestdatamodel.model import TreeStratum
 from forestryfunctions.preprocessing import distributions
 from tests import test_util

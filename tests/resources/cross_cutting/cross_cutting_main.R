@@ -1,18 +1,18 @@
 # Tämä ohjelma esittää, miten R-aliohjelmia käytetään
 # tehty 28.02.2022 Annika Kangas
 
-source("./r/cross_cutting/ApteerausNasberg.R")
-source("./r/cross_cutting/Runkokayraennusteet.R")
-source("./r/cross_cutting/Tilavuus.R")
-source("./r/cross_cutting/Runkokayran korjausmalli.R")
-source("./r/cross_cutting/Korjauskertoimet.R")
+source("./tests/resources/cross_cutting/ApteerausNasberg.R")
+source("./tests/resources/cross_cutting/Runkokayraennusteet.R")
+source("./tests/resources/cross_cutting/Tilavuus.R")
+source("./tests/resources/cross_cutting/Runkokayran korjausmalli.R")
+source("./tests/resources/cross_cutting/Korjauskertoimet.R")
 
 
-taper_curve_list <- list("birch" = readRDS(file.path("./r/cross_cutting/taper_curves/birch.rds")),
-                         "pine" = readRDS(file.path("./r/cross_cutting/taper_curves/pine.rds")),
-                         "spruce" = readRDS(file.path("./r/cross_cutting/taper_curves/spruce.rds")))
+taper_curve_list <- list("birch" = readRDS(file.path("./tests/resources/cross_cutting/taper_curves/birch.rds")),
+                         "pine" = readRDS(file.path("./tests/resources/cross_cutting/taper_curves/pine.rds")),
+                         "spruce" = readRDS(file.path("./tests/resources/cross_cutting/taper_curves/spruce.rds")))
 
-timber_grades_table <- read.table("./r/cross_cutting/Puutavaralajimaarittelyt.txt")
+timber_grades_table <- read.table("./tests/resources/cross_cutting/Puutavaralajimaarittelyt.txt")
 
 
 # species_string can be one of "pine", "spruce" or "birch".

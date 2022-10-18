@@ -1,8 +1,9 @@
-import os 
+import os
 from typing import Any, Dict
 
 from forestdatamodel.enums.internal import TreeSpecies
 from forestdatamodel.model import ForestStand
+
 try:
     import rpy2.robjects as robjects
 except ImportError:
@@ -27,7 +28,6 @@ def get_r_with_sourced_scripts() -> robjects.R:
         
         #change wd temporarily
         _set_working_dir_here()
-        r.source("./r/cross_cutting/cross_cutting_main.R")
         r.source('./r/lmfor_volume.R')
         initialised = True
 

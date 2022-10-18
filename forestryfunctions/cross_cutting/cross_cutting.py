@@ -95,24 +95,6 @@ def _cross_cut(
 
     return apteeraus_Nasberg(T, P, m, n, div)
 
-def _cross_cut_with_r(
-        species: TreeSpecies,
-        breast_height_diameter: float,
-        height: float, 
-        timber_price_table,
-        div = 10    
-        ) -> tuple[Dict, Dict]:
-    """This function is used only to to test the python-ported version of the cross-cutting scripts against the original R version."""
-
-    species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
-    height = round(height)
-
-    r = r_utils.get_r_with_sourced_scripts()
-    result = r["cross_cut"](species_string, breast_height_diameter, height)
-    result = r_utils.convert_r_named_list_to_py_dict(result)
-    return (result["volumes"], result["values"])
-
-
 
 def cross_cut_thinning_output(thinned_trees: ThinningOutput, stand_area: float, timber_price_table: np.ndarray) -> Tuple[List, List]:
     """
