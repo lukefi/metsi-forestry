@@ -1,6 +1,8 @@
-import unittest
+from typing import Dict
 
+import forestryfunctions.r_utils as r_utils
 import numpy as np
+import rpy2.robjects as robjects
 from forestdatamodel.enums.internal import TreeSpecies
 from forestdatamodel.model import ForestStand, ReferenceTree
 from forestryfunctions.cross_cutting import cross_cutting
@@ -11,6 +13,25 @@ from test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
 
 
 class CrossCuttingTest(TestCaseExtension):
+
+    def _cross_cut_with_r(
+        self,
+        species: TreeSpecies,
+        breast_height_diameter: float,
+        height: float, 
+        timber_price_table,
+        div = 10    
+        ) -> tuple[Dict, Dict]:
+        """This function is used only to to test the python-ported version of the cross-cutting scripts against the original R version."""
+
+        species_string = cross_cutting._cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
+        height = round(height)
+
+        r = robjects.r
+        r.source("./tests/resources/cross_cutting/cross_cutting_main.R")
+        result = r["cross_cut"](species_string, breast_height_diameter, height)
+        result = r_utils.convert_r_named_list_to_py_dict(result)
+        return (result["volumes"], result["values"])
 
     def test_cross_cut_stand_returns_total_values(self):
         """This test ensures that the cross_cut_stand returns values that are multiplied by the reference tree's stem count per ha and the stand area."""
@@ -78,7 +99,7 @@ class CrossCuttingTest(TestCaseExtension):
     def test_py_implementation_equals_r_implementation(self, species, breast_height_diameter, height):
 
         py_volumes, py_values = cross_cutting._cross_cut(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
-        r_volumes, r_values = cross_cutting._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
+        r_volumes, r_values = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
 
         decimals = 6
         py_volumes = np.around(py_volumes, decimals=decimals)
