@@ -139,7 +139,7 @@ def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: 
 #        reference_tree = ReferenceTree()
         i=i+1
         if reference_tree.height <= 1.300:
-            reference_tree.breast_height_diameter =0.0
+            reference_tree.breast_height_diameter = 0.00
         elif (reference_tree.height > 1.3 and H > 1.3 and D > 0.0):
 #..FORECO 257.
             lndiJS = 0.3904 + 0.9119 * math.log(reference_tree.height - 1.0) + 0.05318 * reference_tree.height \
@@ -152,6 +152,8 @@ def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: 
             lndi = 1.5663 + 0.4559 * math.log(reference_tree.height) + 0.0324 * reference_tree.height
             di = math.exp(lndi + 0.004713 / 2) - 5.0
             reference_tree.breast_height_diameter = di
+        reference_tree.breast_height_diameter = round(reference_tree.breast_height_diameter,2)
+        reference_tree.height = round(reference_tree.height,2)
     return result
 
 
