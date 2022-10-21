@@ -1,5 +1,6 @@
 import unittest
-from typing import List, Callable, Tuple
+from typing import Callable, List, Tuple
+
 import numpy as np
 
 DEFAULT_TIMBER_PRICE_TABLE = np.array(
@@ -8,6 +9,16 @@ DEFAULT_TIMBER_PRICE_TABLE = np.array(
                         [  1., 160., 430.,  59.],
                         [  1., 160., 460.,  59.],
                         [  2.,  70., 300.,  17.]])
+
+TIMBER_PRICE_TABLE_THREE_GRADES = np.array(
+                        [[  1., 160., 370.,  55.],
+                        [  1., 160., 400.,  57.],
+                        [  1., 160., 430.,  59.],
+                        [  1., 160., 460.,  59.],
+                        [  2.,  70., 300.,  17.],
+                        [  2.,  70., 270.,  15.],
+                        [  3.,  70., 220.,  10.]
+                        ])
 
 class ConverterTestSuite(unittest.TestCase):
     def run_with_test_assertions(self, assertions: List[Tuple], fn: Callable):
