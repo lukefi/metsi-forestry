@@ -84,3 +84,13 @@ def calculate_basal_area_weighted_attribute_sum(reference_trees: List[ReferenceT
     basal_area_total = calculate_attribute_sum(reference_trees, calculate_basal_area)
     attribute_total = calculate_attribute_sum(reference_trees, f)
     return attribute_total / basal_area_total
+
+def mean_age_stand(stand: ForestStand) -> float:
+    stems = overall_stems_per_ha(stand)
+    if stems > 0:
+        agesum = sum(rt.stems_per_ha * rt.biological_age for rt in stand.reference_trees)
+        mean_age = agesum/stems
+    else:
+        mean_age = 0
+    return mean_age
+

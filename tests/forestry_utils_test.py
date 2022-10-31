@@ -119,3 +119,17 @@ class ForestryUtilsTest(unittest.TestCase):
         for i in assertions:
             result = futil.compounded_growth_factor(i[0][0], i[0][1])
             self.assertEqual(i[1], round(result, 3))
+
+    def test_mean_age_stand(self):
+        stand = ForestStand()
+        self.assertEqual(0,futil.mean_age_stand(stand))
+        stand.reference_trees = []
+        for i in range(1, 30):
+            reference_tree = ReferenceTree()
+            reference_tree.species = 1
+            reference_tree.biological_age = 60 - i
+            reference_tree.breast_height_diameter = 10.0 + i
+            reference_tree.stems_per_ha = 50.0 + i
+            stand.reference_trees.append(reference_tree)
+        self.assertEqual(43.92307692307692,futil.mean_age_stand(stand))
+ 
