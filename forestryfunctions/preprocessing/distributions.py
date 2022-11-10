@@ -102,11 +102,7 @@ def simple_height_distribution(stratum: TreeStratum, n_trees: int) -> List[Refer
 
 # ---- Weibull height distribution models forand diameter models of sapling trees ----
 
-def reference_trees_from_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
-    Hdom = 0.0
-    result = []
-    result = WpituusNOtos(stratum.species,stratum.mean_height,stratum.mean_diameter,stratum.stems_per_ha,Hdom,n_trees)
-    return result
+
 
 def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]:
     """Formulates height distribution of sapling stratum and predicts the diameters and the number of stems of the simulation trees

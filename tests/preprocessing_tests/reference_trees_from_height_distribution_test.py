@@ -2,7 +2,7 @@ import unittest
 from collections import namedtuple
 from forestdatamodel.model import TreeStratum, ReferenceTree, ForestStand
 from forestdatamodel.enums.internal import TreeSpecies
-from forestryfunctions.preprocessing import distributions
+from forestryfunctions.preprocessing import tree_generation
 
 from tests import test_util
 
@@ -14,7 +14,7 @@ class TestDistributions(test_util.ConverterTestSuite):
         Testing the generation of simulation trees from sapling strata
 
         Input values:(stratum: TreeStratum, n_trees: int) -
-            (tree stratum, number of simulation trees) 
+            (tree stratum, number of simulation trees)
         Ouput values:
             (tree stratum)
             (estimated stems per hectare, diameter and height of each simulation tree)
@@ -68,10 +68,10 @@ class TestDistributions(test_util.ConverterTestSuite):
         # Derive results
         results = []
         for test_stratum in test_data:
-            result = distributions.reference_trees_from_height_distribution(test_stratum, n_trees)
+            result = tree_generation.reference_trees_from_height_distribution(test_stratum, n_trees)
             results.append(result)
         # Validate
-        for (result, asse) in zip(results, expected_results):      
+        for (result, asse) in zip(results, expected_results):
             self.assertEqual(asse[3], round(result[0].breast_height_diameter,2))
             self.assertEqual(asse[4], round(result[0].height,2))
             self.assertEqual(asse[5], round(result[0].stems_per_ha,2))

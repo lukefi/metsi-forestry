@@ -48,18 +48,14 @@ def trees_from_weibull(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree
     return result
 
 
-def finalize_trees(reference_trees: List[ReferenceTree], stratum: TreeStratum) -> List[ReferenceTree]:
-    """ For all given trees inflates the common variables from stratum. """
-    n_trees = len(reference_trees)
-    for i, reference_tree in enumerate(reference_trees):
-        reference_tree.stand = stratum.stand
-        reference_tree.species = stratum.species
-        reference_tree.breast_height_age = 0.0 if n_trees == 1 else stratum.get_breast_height_age()
-        reference_tree.biological_age = stratum.biological_age
-        if reference_tree.breast_height_age == 0.0 and reference_tree.breast_height_diameter > 0.0:
-            reference_tree.breast_height_age = 1.0
-        reference_tree.tree_number = i + 1
-    return reference_trees
+def reference_trees_from_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
+    return distributions.WpituusNOtos(
+        stratum.species,
+        stratum.mean_height,
+        stratum.mean_diameter,
+        stratum.stems_per_ha,
+        0.0,
+        n_trees)
 
 
 def solve_tree_generation_strategy(stratum: TreeStratum) -> str:
@@ -110,7 +106,7 @@ def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[in
     strategy = solve_tree_generation_strategy(stratum)
     result = []
     if strategy == TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION:
-        result = distributions.reference_trees_from_height_distribution(stratum, n_trees)
+        result = reference_trees_from_height_distribution(stratum, n_trees)
     elif strategy == TreeStrategy.WEIBULL_DISTRIBUTION:
         result = trees_from_weibull(stratum, n_trees)
     elif strategy == TreeStrategy.SKIP:
