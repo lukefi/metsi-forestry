@@ -8,7 +8,7 @@ from forestryfunctions.preprocessing.naslund import naslund_height
 
 class TreeStrategy(Enum):
     WEIBULL_DISTRIBUTION = 'weibull_distribution'
-    SAPLING_WEIBULL_DISTRIBUTION = 'sapling_weibull_distribution'
+    HEIGHT_DISTRIBUTION = 'HEIGHT_DISTRIBUTION'
     SKIP = 'skip_tree_generation'
 
 
@@ -48,8 +48,9 @@ def trees_from_weibull(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree
     return result
 
 
-def reference_trees_from_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
-    return distributions.WpituusNOtos(
+def trees_from_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
+    """  Generate N trees from height distribution """
+    return distributions.height_distribution(
         stratum.species,
         stratum.mean_height,
         stratum.mean_diameter,
@@ -65,13 +66,13 @@ def solve_tree_generation_strategy(stratum: TreeStratum) -> str:
         if stratum.has_diameter() and stratum.has_height() and stratum.has_basal_area():
             return TreeStrategy.WEIBULL_DISTRIBUTION
         elif stratum.has_diameter() and stratum.has_height() and stratum.has_stems_per_ha():
-            return TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION
+            return TreeStrategy.HEIGHT_DISTRIBUTION
         else:
             return TreeStrategy.SKIP
     else:
         # small trees
         if stratum.has_height() and stratum.has_sapling_stems_per_ha():
-            return TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION
+            return TreeStrategy.HEIGHT_DISTRIBUTION
         else:
             return TreeStrategy.SKIP
 
@@ -93,8 +94,8 @@ def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[in
     """
     strategy = solve_tree_generation_strategy(stratum)
     result = []
-    if strategy == TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION:
-        result = reference_trees_from_height_distribution(stratum, n_trees)
+    if strategy == TreeStrategy.HEIGHT_DISTRIBUTION:
+        result = trees_from_height_distribution(stratum, n_trees)
     elif strategy == TreeStrategy.WEIBULL_DISTRIBUTION:
         result = trees_from_weibull(stratum, n_trees)
     elif strategy == TreeStrategy.SKIP:

@@ -70,7 +70,7 @@ class TestDistributions(test_util.ConverterTestSuite):
                 )
             ]
         for i in assertions:
-            tree_list = distributions.WpituusNOtos(*i[0])
+            tree_list = distributions.height_distribution(*i[0])
             asse = iter(i[1])
             for tree in tree_list:
                 result = (tree.stems_per_ha, tree.breast_height_diameter, tree.height)             

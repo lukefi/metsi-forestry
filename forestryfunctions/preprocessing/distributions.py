@@ -100,11 +100,10 @@ def simple_height_distribution(stratum: TreeStratum, n_trees: int) -> List[Refer
         result.append(reference_tree)
     return result
 
-# ---- Weibull height distribution models forand diameter models of sapling trees ----
 
+# ---- Weibull height distribution models for diameter models of sapling trees ----
 
-
-def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]:
+def height_distribution(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]:
     """Formulates height distribution of sapling stratum and predicts the diameters and the number of stems of the simulation trees
     References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
                 Forest Ecology and management 257: 223–232. (GLM model)
@@ -153,7 +152,7 @@ def WpituusNOtos(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: 
     return result
 
 
-def Weib_sapling(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]:
+def weibull_sapling(pl: float, H: float, D: float, N: float, Hdom: float, n_trees: int) -> List[ReferenceTree]:
     """Formulates weibull height distribution of sapling stratum and the number of stems of the simulation trees
     References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
                 Forest Ecology and management 257: 223–232. (GLM model)

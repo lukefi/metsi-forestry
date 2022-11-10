@@ -82,8 +82,8 @@ class TestTreeGeneration(unittest.TestCase):
 
         expected_values = [
             tree_generation.TreeStrategy.WEIBULL_DISTRIBUTION,
-            tree_generation.TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION,
-            tree_generation.TreeStrategy.SAPLING_WEIBULL_DISTRIBUTION,
+            tree_generation.TreeStrategy.HEIGHT_DISTRIBUTION,
+            tree_generation.TreeStrategy.HEIGHT_DISTRIBUTION,
             tree_generation.TreeStrategy.SKIP,
         ]
 
