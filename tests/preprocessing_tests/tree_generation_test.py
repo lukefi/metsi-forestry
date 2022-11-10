@@ -91,21 +91,6 @@ class TestTreeGeneration(unittest.TestCase):
             result = tree_generation.solve_tree_generation_strategy(stratum)
             self.assertEqual(expected, result)
 
-    def test_solve_reference_tree_count(self):
-        assertions = [
-            ((25, 7), 7),
-            ((25, None), 10),
-            ((1.3, 7), 7),
-            ((1.3, None), 1),
-            ((None, None), None)
-        ]
-        for i in assertions:
-            stratum = TreeStratum()
-            stratum.mean_height = i[0][0]
-            n_trees = i[0][1]
-            result = tree_generation.solve_reference_tree_count(stratum, n_trees)
-            self.assertEqual(i[1], result)
-
     def test_generate_reference_trees_from_tree_stratum(self):
         # Test data generation
         stand = ForestStand()
