@@ -199,7 +199,7 @@ class TestTreeGeneration(unittest.TestCase):
             self.Input(1,  0.0,  0.0,  1.3,  0,  5, stand, 330.0, 330.0), # Sapling tree generation
             # species=1;
             # all other values None
- #           self.Input(1, None, None,  None,  None,  None, None, None, None) # Skip tree generation
+            # self.Input(1, None, None,  None,  None,  None, None, None, None) # Skip tree generation
         ]
         test_data = self.create_test_stratums(stratum_inputs)
 
@@ -212,12 +212,8 @@ class TestTreeGeneration(unittest.TestCase):
             # stems_per_ha=33.0;
             # breast_height_age=0.0;
             # biological_age=5;
-            [10, stand, 1, 0.0, 1.05, 33.0, 0.0, 5]]
-#            ,
-            # n_trees=0
-            # List[ReferenceTree]=[]
-#            [0, []],
-#        ]
+            [10, stand, 1, 0.0, 1.05, 33.0, 0.0, 5]
+        ]
 
         # Derive results
         n_trees = 10
@@ -237,6 +233,3 @@ class TestTreeGeneration(unittest.TestCase):
                 self.assertEqual(asse[5], round(result[0].stems_per_ha,2))
                 self.assertEqual(asse[6], result[0].breast_height_age)
                 self.assertEqual(asse[7], result[0].biological_age)
-#            else:
-                # Skip case
-#                self.assertEqual(asse[1], result)
