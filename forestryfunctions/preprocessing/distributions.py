@@ -103,50 +103,64 @@ def simple_height_distribution(stratum: TreeStratum, n_trees: int) -> List[Refer
 
 # ---- Weibull height distribution models for diameter models of sapling trees ----
 
-def height_distribution(species: float, height: float, diameter: float, stem_count: float, dominant_height: float, n_trees: int) -> List[ReferenceTree]:
-    """Formulates height distribution of sapling stratum and predicts the diameters and the number of stems of the simulation trees
-    References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
-                Forest Ecology and management 257: 223–232. (GLM model)
+def diameter_model_valkonen(height_rt) -> float:
+    """ Sapling diameter prediction model by Valkonen (1997).
+    Predicts sapling diameter for youngest trees directly from height.
 
-    return: Given number of trees containing breast height diameter, height and stems per hectar
+    height_rt: reference tree height
+    return: reference tree diameter
     """
-    result = []
-    if n_trees == 1:
-        # single tree:
-        reference_tree = ReferenceTree()
-        reference_tree.breast_height_diameter = diameter
-        reference_tree.height = height
-        reference_tree.stems_per_ha = stem_count
-        result.append(reference_tree)
-    else:
-        # more than one trees
-        result = weibull_sapling(height, stem_count, dominant_height, n_trees)
-        dominant_height=1.05*height
-        # Sapling diameters are predicted
-        for reference_tree in result:
-            if reference_tree.height <= 1.300:
-                reference_tree.breast_height_diameter = 0.00
-            elif (reference_tree.height > 1.3 and height > 1.3 and diameter > 0.0):
-            #..FORECO 257.
-                lndiJS = (
-                    0.3904
-                    + 0.9119 * math.log(reference_tree.height - 1.0)
-                    + 0.05318 * reference_tree.height \
-                    - 1.0845 * math.log(height)
-                    + 0.9468 * math.log(diameter+1)
-                    - 0.0311 * dominant_height
-                )
-                dvari = 0.000478 + 0.000305 + 0.03199 # for bias correction
-                di = math.exp(lndiJS + dvari / 2.)
-                reference_tree.breast_height_diameter = di
-            elif (reference_tree.height > 1.3 and (height >= 1.3 or diameter <= 0)):
-            # for the youngest sapling stands diameter is predicted directly from height Valkonen (1997)
-                lndi = 1.5663 + 0.4559 * math.log(reference_tree.height) + 0.0324 * reference_tree.height
-                di = math.exp(lndi + 0.004713 / 2) - 5.0
-                reference_tree.breast_height_diameter = di
-            reference_tree.breast_height_diameter = round(reference_tree.breast_height_diameter,2)
-            reference_tree.height = round(reference_tree.height,2)
-    return result
+    lndi = 1.5663 + 0.4559 * math.log(height_rt) + 0.0324 * height_rt
+    return math.exp(lndi + 0.004713 / 2) - 5.0
+
+
+def diameter_model_siipilehto(height_rt: float, height: float, diameter: float, dominant_height: float) -> float:
+    """ Diameter model for reference tree by Siipilehto in FORECO 257
+
+    height_rt: Reference tree height
+    height: Mean diameter of stratum
+    diameter: Mean diameter of stratum
+    dominant_height: Stand dominant height NOTE: is this correct?
+    """
+    lndiJS = (
+        0.3904
+        + 0.9119 * math.log(height_rt - 1.0)
+        + 0.05318 * height_rt \
+        - 1.0845 * math.log(height)
+        + 0.9468 * math.log(diameter + 1)
+        - 0.0311 * dominant_height
+    )
+    dvari = 0.000478 + 0.000305 + 0.03199 # for bias correction
+    return math.exp(lndiJS + dvari / 2.0)
+
+
+def predict_sapling_diameters(reference_trees: List[ReferenceTree], height: float, diameter: float, dominant_height: float) -> List[ReferenceTree]:
+    """ Logic for predicting sapling diameters.
+
+    Diameters are predicted via Valkonen's diameter height model or Siipilehto's diameter model.
+    For other cases diameter is set to zero.
+
+    reference_trees: List of reference trees with height and stems_per_ha members inflated
+    height: Mean height of stratum
+    diameter: Mean diameter of stratum
+    return: Updated list of reference trees containing diameters.
+    """
+    for rt in reference_trees:
+        if rt.height > 1.3 and height > 1.3 and diameter > 0.0:
+            di = diameter_model_siipilehto(
+                rt.height,
+                height,
+                diameter,
+                dominant_height
+            )
+        elif rt.height > 1.3 and (height >= 1.3 or diameter <= 0):
+            di = diameter_model_valkonen(rt.height)
+        else:
+            # rt.height <= 1.3 and other cases
+            di = 0.0
+        rt.breast_height_diameter = round(di, 2)
+        rt.height = round(rt.height, 2)
+    return reference_trees
 
 
 def weibull_sapling(height: float, stem_count: float, dominant_height: float, n_trees: int) -> List[ReferenceTree]:
@@ -210,3 +224,23 @@ def weibull_sapling(height: float, stem_count: float, dominant_height: float, n_
         result.append(reference_tree)
     return result
 
+
+def height_distribution(species: float, height: float, diameter: float, stem_count: float, dominant_height: float, n_trees: int) -> List[ReferenceTree]:
+    """Formulates height distribution of sapling stratum and predicts the diameters and the number of stems of the simulation trees
+    References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
+                Forest Ecology and management 257: 223–232. (GLM model)
+
+    return: Given number of trees containing breast height diameter, height and stems per hectar
+    """
+    if n_trees == 1:
+        # single tree:
+        reference_tree = ReferenceTree()
+        reference_tree.breast_height_diameter = diameter
+        reference_tree.height = height
+        reference_tree.stems_per_ha = stem_count
+        return [reference_tree]
+    else:
+        # more than one trees
+        result = weibull_sapling(height, stem_count, dominant_height, n_trees)
+        dominant_height=1.05*height
+        return predict_sapling_diameters(result, height, diameter, dominant_height)
