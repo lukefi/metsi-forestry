@@ -81,7 +81,7 @@ def weibull(n_samples: int, diameter: float, basal_area: float, height: float, m
 
 # ---- Simple height distribution model ----
 
-# NOTE: debricated only for test purposes
+# NOTE: Debricated, only for test purposes
 def simple_height_distribution(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree]:
     """ Generate N trees from tree stratum.
 
@@ -103,7 +103,7 @@ def simple_height_distribution(stratum: TreeStratum, n_trees: int) -> List[Refer
 
 # ---- Weibull height distribution models for diameter models of sapling trees ----
 
-def diameter_model_valkonen(height_rt) -> float:
+def diameter_model_valkonen(height_rt: float) -> float:
     """ Sapling diameter prediction model by Valkonen (1997).
     Predicts sapling diameter for youngest trees directly from height.
 
