@@ -51,10 +51,7 @@ def trees_from_weibull(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree
 def trees_from_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
     """  Generate N trees from height distribution """
     return distributions.height_distribution(
-        stratum.species,
-        stratum.mean_height,
-        stratum.mean_diameter,
-        stratum.stems_per_ha,
+        stratum,
         0.0,
         n_trees)
 
