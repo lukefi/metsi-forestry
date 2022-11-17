@@ -130,4 +130,4 @@ def cross_cut_trees(cross_cuttable_trees: CrossCuttableTrees, stand_area: float,
                             )
         cross_cut_results.extend(results)
 
-    return cross_cut_results
+    return CrossCutResults(cross_cut_results)
