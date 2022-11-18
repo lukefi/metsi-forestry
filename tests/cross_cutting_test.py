@@ -1,18 +1,18 @@
 import unittest
 from typing import Dict
 
-import forestryfunctions.r_utils as r_utils
 import numpy as np
 import rpy2.robjects as robjects
 from forestdatamodel.enums.internal import TreeSpecies
 from forestdatamodel.model import ForestStand, ReferenceTree
+from parameterized import parameterized
+
+import forestryfunctions.r_utils as r_utils
 from forestryfunctions.cross_cutting import cross_cutting
 from forestryfunctions.cross_cutting.model import (CrossCutResult,
                                                    CrossCutResults,
                                                    CrossCuttableTree,
                                                    CrossCuttableTrees)
-from parameterized import parameterized
-
 from tests.test_util import (DEFAULT_TIMBER_PRICE_TABLE,
                              TIMBER_PRICE_TABLE_THREE_GRADES,
                              TestCaseExtension)
@@ -65,7 +65,7 @@ class CrossCuttingTest(TestCaseExtension):
                             ]
                         )
 
-        results = cross_cutting.cross_cut_trees(thinned_trees, stand_area, DEFAULT_TIMBER_PRICE_TABLE)
+        results = cross_cutting.cross_cut_trees(thinned_trees, stand_area, DEFAULT_TIMBER_PRICE_TABLE).results
 
         self.assertEqual(len(results), 6)
         self.assertAlmostEqual(sum([r.value_per_ha for r in results]), 0.05577748139, places=6)
@@ -118,7 +118,7 @@ class CrossCuttingTest(TestCaseExtension):
                     ]
                 )
         
-        res = cross_cutting.cross_cut_trees(thinning_output, stand_area, TIMBER_PRICE_TABLE_THREE_GRADES)
+        res = cross_cutting.cross_cut_trees(thinning_output, stand_area, TIMBER_PRICE_TABLE_THREE_GRADES).results
         grades = [r.timber_grade for r in res]
         unique_grades = set(grades)
         self.assertEqual(len(unique_grades), 3)
