@@ -169,6 +169,10 @@ def weibull_sapling(height: float, stem_count: float, dominant_height: float, n_
     References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
         Forest Ecology and management 257: 223–232. (GLM model).
 
+    height: Average height of stratum
+    stem_count: Stratum stem count
+    dominant_height: Dominant height
+    n_trees: Number of reference trees to be generated
     return: Given number of trees with stems per hectar and height properties inflated.
     """
 
