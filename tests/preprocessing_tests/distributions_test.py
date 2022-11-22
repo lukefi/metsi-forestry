@@ -131,6 +131,7 @@ class TestDistributions(test_util.ConverterTestSuite):
             n_trees=10)
         self.assertEqual(len(result), 10)
         for res, asse in zip(result, assertions):
+            self.assertEqual(res.sapling, True)
             self.assertEqual(res.stems_per_ha, 9.9)
             self.assertEqual(res.height, asse)
 

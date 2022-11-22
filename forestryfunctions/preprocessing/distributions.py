@@ -225,6 +225,7 @@ def weibull_sapling(height: float, stem_count: float, dominant_height: float, n_
         reference_tree.height = hi
 
         reference_tree.stems_per_ha = Nh
+        reference_tree.sapling = True
         result.append(reference_tree)
     return result
 
