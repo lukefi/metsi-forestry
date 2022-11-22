@@ -79,6 +79,7 @@ class TestDistributions(test_util.ConverterTestSuite):
 
     def test_predict_sapling_diameters(self):
         assertions = [
+            # height and diameter tuples
             (10.0, 11.55),
             (10.0, 13.96),
             (10.0, 13.96),
