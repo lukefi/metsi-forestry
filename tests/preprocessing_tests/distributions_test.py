@@ -135,6 +135,3 @@ class TestDistributions(test_util.ConverterTestSuite):
             self.assertEqual(res.sapling, True)
             self.assertEqual(res.stems_per_ha, 9.9)
             self.assertEqual(res.height, asse)
-
-
-

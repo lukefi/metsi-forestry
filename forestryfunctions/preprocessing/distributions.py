@@ -230,7 +230,7 @@ def weibull_sapling(height: float, stem_count: float, dominant_height: float, n_
     return result
 
 
-def height_distribution(stratum: TreeStratum, dominant_height: float, n_trees: int) -> List[ReferenceTree]:
+def sapling_height_distribution(stratum: TreeStratum, dominant_height: float, n_trees: int) -> List[ReferenceTree]:
     """Formulates height distribution of sapling stratum and predicts the diameters and the number of stems of the simulation trees
     References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
                 Forest Ecology and management 257: 223–232. (GLM model)

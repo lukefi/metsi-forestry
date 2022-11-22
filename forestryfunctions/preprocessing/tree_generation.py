@@ -48,9 +48,9 @@ def trees_from_weibull(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree
     return result
 
 
-def trees_from_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
+def trees_from_sapling_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
     """  Generate N trees from height distribution """
-    return distributions.height_distribution(
+    return distributions.sapling_height_distribution(
         stratum,
         0.0,
         n_trees)
@@ -92,7 +92,7 @@ def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[in
     strategy = solve_tree_generation_strategy(stratum)
     result = []
     if strategy == TreeStrategy.HEIGHT_DISTRIBUTION:
-        result = trees_from_height_distribution(stratum, n_trees)
+        result = trees_from_sapling_height_distribution(stratum, n_trees)
     elif strategy == TreeStrategy.WEIBULL_DISTRIBUTION:
         result = trees_from_weibull(stratum, n_trees)
     elif strategy == TreeStrategy.SKIP:
