@@ -1,4 +1,4 @@
-from forestdatamodel.model import TreeStratum
+from forestdatamodel.model import TreeStratum, ReferenceTree
 from forestryfunctions.preprocessing import distributions
 from tests import test_util
 
@@ -54,7 +54,7 @@ class TestDistributions(test_util.ConverterTestSuite):
                 result = (tree.stems_per_ha, tree.breast_height_diameter)
                 self.assertEqual(next(asse), result)
 
-    def test_trees_from_height_distribution(self):
+    def test_trees_from_simple_height_distribution(self):
         fixture = TreeStratum()
         fixture.mean_diameter = 28.0
         fixture.stems_per_ha = 170.0
@@ -68,3 +68,71 @@ class TestDistributions(test_util.ConverterTestSuite):
         self.assertEqual(28.0, result[1].breast_height_diameter)
         self.assertEqual(22.0, result[0].height)
         self.assertEqual(22.0, result[1].height)
+
+    def test_diameter_model_valkonen(self):
+        result = distributions.diameter_model_valkonen(height_rt=10.0)
+        self.assertEqual(result, 13.961394503710512)
+
+    def test_diameter_model_siipilehto(self):
+        result = distributions.diameter_model_siipilehto(height_rt=10.0, height=12.0, diameter=9.0, dominant_height=1.1)
+        self.assertEqual(result, 10.94882228311327)
+
+    def test_predict_sapling_diameters(self):
+        assertions = [
+            (10.0, 11.55),
+            (10.0, 13.96),
+            (10.0, 13.96),
+            (10.0, 0.0),
+            (1.0, 0.0)
+        ]
+        hs = [10.0, 10.0, 10.0, 10.0, 1.0]
+        ds = [8.0, 8.0, 8.0, 8.0, 8.0]
+        reference_trees = [
+            [ ReferenceTree(
+                height=h,
+                breast_height_diameter=d) ]
+            for h, d in zip(hs, ds)
+        ]
+        avghs = [20.0, 1.3, 1.2, 1.2, 999.0]
+        avgds = [18.0, 0.0, 0.0, 10.0, 999.0]
+        strata = [
+            TreeStratum(
+                mean_height=h,
+                mean_diameter=d)
+            for h, d in zip(avghs, avgds)
+        ]
+        for rts, st, ass in zip(reference_trees, strata, assertions):
+            result = distributions.predict_sapling_diameters(
+                rts,
+                height=st.mean_height,
+                diameter=st.mean_diameter,
+                dominant_height=1.1)
+            self.assertEqual(len(result), 1)
+            self.assertEqual(result[0].height, ass[0])
+            self.assertEqual(result[0].breast_height_diameter, ass[1])
+
+    def test_weibull_sapling(self):
+        assertions = [
+            7.8371012020168695,
+            8.720685904543247,
+            9.19442826383905,
+            9.54481956443186,
+            9.839019302036084,
+            10.106379021414261,
+            10.365825850104796,
+            10.636249807741741,
+            10.949869466788893,
+            11.423214009923312,
+        ]
+        result = distributions.weibull_sapling(
+            height=10.0,
+            stem_count=99.0,
+            dominant_height=1.1,
+            n_trees=10)
+        self.assertEqual(len(result), 10)
+        for res, asse in zip(result, assertions):
+            self.assertEqual(res.stems_per_ha, 9.9)
+            self.assertEqual(res.height, asse)
+
+
+
