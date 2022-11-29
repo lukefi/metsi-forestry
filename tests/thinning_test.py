@@ -20,7 +20,7 @@ class ThinningTest(unittest.TestCase):
         ]
         thinning_factor = 0.97
         basal_area_upper_bound = 18.0
-        thin_predicate = lambda stand: basal_area_upper_bound < futil.overall_basal_area(stand)
+        thin_predicate = lambda stand: basal_area_upper_bound < futil.overall_basal_area(stand.reference_trees)
         extra_factor_solver = lambda i, n ,c: 0
         thinning.iterative_thinning(stand, thinning_factor, thin_predicate, extra_factor_solver)
         self.assertEqual(3, len(stand.reference_trees))
