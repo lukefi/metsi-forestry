@@ -23,6 +23,12 @@ def finalize_trees(reference_trees: List[ReferenceTree], stratum: TreeStratum) -
         if reference_tree.breast_height_age == 0.0 and reference_tree.breast_height_diameter > 0.0:
             reference_tree.breast_height_age = 1.0
         reference_tree.tree_number = i + 1
+        reference_tree.stems_per_ha = None if reference_tree.stems_per_ha is None \
+            else round(reference_tree.stems_per_ha, 2)
+        reference_tree.breast_height_diameter = None if reference_tree.breast_height_diameter is None \
+            else round(reference_tree.breast_height_diameter, 2)
+        reference_tree.height = None if reference_tree.height is None \
+            else round(reference_tree.height, 2)
     return reference_trees
 
 

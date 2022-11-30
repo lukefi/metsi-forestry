@@ -72,8 +72,8 @@ def weibull(n_samples: int, diameter: float, basal_area: float, height: float, m
         stems_per_sample = p * stems
 
         reference_tree = ReferenceTree()
-        reference_tree.stems_per_ha = round(stems_per_sample, 2)
-        reference_tree.breast_height_diameter = round(computed_diameter, 2)
+        reference_tree.stems_per_ha = stems_per_sample
+        reference_tree.breast_height_diameter = computed_diameter
 
         result.append(reference_tree)
     return result
@@ -158,8 +158,7 @@ def predict_sapling_diameters(reference_trees: List[ReferenceTree], height: floa
         else:
             # rt.height <= 1.3 and other cases
             di = 0.0
-        rt.breast_height_diameter = round(di, 2)
-        rt.height = round(rt.height, 2)
+        rt.breast_height_diameter = di
     return reference_trees
 
 
