@@ -18,7 +18,7 @@ def weibull_coeffs(diameter: float, basal_area: float, min_diameter: Optional[fl
 
     Notice that min_diameter can be used to override the formulation of weight (a).
 
-    :param diameter: Mean diameter
+    :param diameter: Mean diameter (cm)
     :param basal_area: Basal area
     :param min_diameter: (optional) Should be a value between [0.0, 4.5]
     :return weight coefficients (a, b, c) used in the Weibull distribution calculation
@@ -35,11 +35,11 @@ def weibull(n_samples: int, diameter: float, basal_area: float, height: float, m
     """ Computes Stems per hectare and diameter for given number of refernece trees. The values are driven from the Weibull distribution.
 
     :param n_samples: Number of trees to be created
-    :param diameter: Average diameter
+    :param diameter: Average diameter (cm)
     :param basal_area: Basal area
-    :param height: Average height
+    :param height: Average height (m)
     :param min_diameter: (optional) Minimum diameter used in weight calculation. If given should be a value between [0.0, 4.5]
-    :return Given number of trees containing stems per hectare and diameters as object instance members.
+    :return Given number of trees containing stems per hectare and diameters (cm) as object instance members.
     """
     (a, b, c) = weibull_coeffs(diameter, basal_area, min_diameter)
 
@@ -107,8 +107,8 @@ def diameter_model_valkonen(height_rt: float) -> float:
     """ Sapling diameter prediction model by Valkonen (1997).
     Predicts sapling diameter for youngest trees directly from height.
 
-    height_rt: reference tree height
-    return: reference tree diameter
+    height_rt: reference tree height (m)
+    return: reference tree diameter (cm)
     """
     lndi = 1.5663 + 0.4559 * math.log(height_rt) + 0.0324 * height_rt
     return math.exp(lndi + 0.004713 / 2) - 5.0
@@ -117,10 +117,11 @@ def diameter_model_valkonen(height_rt: float) -> float:
 def diameter_model_siipilehto(height_rt: float, height: float, diameter: float, dominant_height: float) -> float:
     """ Diameter model for reference tree by Siipilehto in FORECO 257
 
-    height_rt: Reference tree height
-    height: Mean diameter of stratum
-    diameter: Mean diameter of stratum
-    dominant_height: Stand dominant height NOTE: is this correct?
+    height_rt: Reference tree height (m)
+    height: Mean diameter of stratum (cm)
+    diameter: Mean diameter of stratum (cm)
+    dominant_height: Stand dominant height (m)
+    return: reference tree diameter (cm)
     """
     lndiJS = (
         0.3904
@@ -141,9 +142,9 @@ def predict_sapling_diameters(reference_trees: List[ReferenceTree], height: floa
     For other cases diameter is set to zero.
 
     reference_trees: List of reference trees with height and stems_per_ha members inflated
-    height: Mean height of stratum
-    diameter: Mean diameter of stratum
-    return: Updated list of reference trees containing diameters.
+    height: Mean height of stratum (m)
+    diameter: Mean diameter of stratum (cm)
+    return: Updated list of reference trees containing diameters (cm).
     """
     for rt in reference_trees:
         if rt.has_height_over_130_cm() and height > 1.3 and diameter > 0.0:
@@ -168,11 +169,11 @@ def weibull_sapling(height: float, stem_count: float, dominant_height: float, n_
     References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
         Forest Ecology and management 257: 223–232. (GLM model).
 
-    height: Average height of stratum
+    height: Average height of stratum (m)
     stem_count: Stratum stem count
     dominant_height: Dominant height
     n_trees: Number of reference trees to be generated
-    return: Given number of trees with stems per hectar and height properties inflated.
+    return: Given number of trees with stems per hectar and height (m) properties inflated.
     """
 
     # Mean diameter and dominant height can be illogical:
@@ -234,7 +235,7 @@ def sapling_height_distribution(stratum: TreeStratum, dominant_height: float, n_
     References: Siipilehto, J. 2009, Modelling stand structure in young Scots pine dominated stands.
                 Forest Ecology and management 257: 223–232. (GLM model)
 
-    return: Given number of trees containing breast height diameter, height and stems per hectar
+    return: Given number of trees containing breast height diameter (cm), height (m) and stems per hectar
     """
     if n_trees == 1:
         # single tree:

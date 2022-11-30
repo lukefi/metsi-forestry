@@ -87,8 +87,8 @@ def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[in
     For big trees generation strategies are weibull and height distributions.
     Small trees (height < 1.3 meters) are generated with height distribution.
 
-    Big trees need diameter, height and basal area or stem count for the generation process to succeed.
-    Small trees need only height and stem count.
+    Big trees need diameter (cm), height (m) and basal area or stem count for the generation process to succeed.
+    Small trees need only height (m) and sapling stem count.
     All other cases are skipped.
 
     :param stratum: Single stratum instance.
