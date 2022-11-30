@@ -1,9 +1,9 @@
 import numpy as np
 from forestdatamodel.enums.internal import TreeSpecies
+
 from forestryfunctions.cross_cutting import stem_profile
 from forestryfunctions.cross_cutting.model import (CrossCutResult,
-                                                   CrossCutResults,
-                                                   CrossCuttableTrees)
+                                                   CrossCuttableTree)
 
 _cross_cut_species_mapper = {
     TreeSpecies.PINE: "pine",
@@ -93,7 +93,16 @@ def _cross_cut(
 
     return apteeraus_Nasberg(T, P, m, n, div)
 
-def _create_cross_cut_results(stand_area, species, stems_removed_per_ha, unique_timber_grades, volumes, values):
+def _create_cross_cut_results(
+    stand_area: float, 
+    species: TreeSpecies,
+    stems_removed_per_ha: float, 
+    unique_timber_grades, 
+    volumes: float, 
+    values: float, 
+    tree_source: str,
+    time_point: int
+    ) -> list[CrossCutResult]:
     results = []
     for grade, volume, value in zip(unique_timber_grades, volumes, values):
         results.append(
@@ -102,32 +111,44 @@ def _create_cross_cut_results(stand_area, species, stems_removed_per_ha, unique_
                     timber_grade=int(grade),
                     volume_per_ha=volume*stems_removed_per_ha,
                     value_per_ha=value*stems_removed_per_ha,
-                    stand_area=stand_area
+                    stand_area=stand_area,
+                    source=tree_source,
+                    time_point=time_point
                 )
             )
     return results
 
-def cross_cut_trees(cross_cuttable_trees: CrossCuttableTrees, stand_area: float, timber_price_table: np.ndarray) -> CrossCutResults:
+
+def cross_cut_tree(
+    tree: CrossCuttableTree,
+    stand_area: float, 
+    timber_price_table: np.ndarray, 
+    ) -> list[CrossCutResult]:
+    """ 
+    :param tree: The tree to cross cut
+    :returns: A list of CrossCutResult objects, whose length is given by the number of unique timber grades in the `timber_price_table`. In other words, the returned list contains the resulting quantities of each unique timber grade.
     """
-    :param cross_cuttable_trees: A list of trees that can be cross cut. These can be for example trees that have been thinned, or all the trees of a stand in case of a clear cut.
-    :returns: A list of CrossCutResult objects, whose length is given by the number of unique timber grades in the `timber_price_table` times the number of trees in `cross_cuttable_trees`.
-    """
-    cross_cut_results = []
-    for tree in cross_cuttable_trees.trees:
-        unique_timber_grades, volumes, values = _cross_cut(
+    results = []
+
+    unique_timber_grades, volumes, values = _cross_cut(
                             tree.species,
                             tree.breast_height_diameter,
                             tree.height,
                             timber_price_table
                             )
-        results = _create_cross_cut_results(
-                            stand_area, 
-                            tree.species, 
-                            tree.stems_to_cut_per_ha, 
-                            unique_timber_grades, 
-                            volumes, 
-                            values
-                            )
-        cross_cut_results.extend(results)
 
-    return CrossCutResults(cross_cut_results)
+    res = _create_cross_cut_results(
+                        stand_area, 
+                        tree.species, 
+                        tree.stems_to_cut_per_ha, 
+                        unique_timber_grades, 
+                        volumes, 
+                        values,
+                        tree.source,
+                        tree.time_point
+                        )
+    results.extend(res)
+    
+    return results
+
+    
