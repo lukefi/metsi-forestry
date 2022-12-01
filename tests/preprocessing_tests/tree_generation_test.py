@@ -228,7 +228,7 @@ class TestTreeGeneration(unittest.TestCase):
             # stems_per_ha=33.0;
             # breast_height_age=0.0;
             # biological_age=5;
-            [1, stand, 1, 0.0, 1.3, 33.0, 0.0, 5],
+            [1, stand, 1, 1.0, 1.3, 33.0, 0.0, 5],
             # n_trees=0
             # List[ReferenceTree]=[]
             [0, []],
