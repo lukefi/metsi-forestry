@@ -1,11 +1,7 @@
-from typing import Any, Dict, List, Tuple
-
-import forestryfunctions.r_utils as r_utils
 import numpy as np
 from forestdatamodel.enums.internal import TreeSpecies
-from forestdatamodel.model import ForestStand
+
 from forestryfunctions.cross_cutting import stem_profile
-from forestryfunctions.cross_cutting.model import ThinningOutput
 
 _cross_cut_species_mapper = {
     TreeSpecies.PINE: "pine",
@@ -16,7 +12,7 @@ _cross_cut_species_mapper = {
 }
 
 
-def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) -> tuple[np.ndarray, np.ndarray]:
+def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     This function has been ported from, and should be updated according to, the R implementation.
     """
@@ -72,17 +68,17 @@ def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) ->
 
         maxi = l
 
-    return (volumes, values)
+    return (nas, volumes, values) #deviating from the R implementation a little bit by also returning `nas`, the list of unique timber grades.
 
 
-def _cross_cut(
+def cross_cut(
         species: TreeSpecies,
         breast_height_diameter: float,
         height: float, 
         timber_price_table,
         div = 10
-        ) -> tuple[np.ndarray, np.ndarray]:
-
+        ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Returns a tuple containing unique timber grades and their respective volumes and values."""
     species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
     
     #the original cross-cut scripts rely on the height being an integer, thus rounding.
@@ -96,73 +92,4 @@ def _cross_cut(
     return apteeraus_Nasberg(T, P, m, n, div)
 
 
-def cross_cut_thinning_output(thinned_trees: ThinningOutput, stand_area: float, timber_price_table: np.ndarray) -> Tuple[List, List]:
-    """
-    Calculates the total volume and value of cross cutting the :thinned_trees:. 
-    Returns a tuple of (volumes, values) where volumes and values are lists of floats.
-    These lists are of size `(m, n)` where
-       `m` is the number of unique timber grades (puutavaralaji) and 
-        `n` is the count of cut reference trees.
-    it's left to the caller to generate aggregates from these.
-    """
-    volumes_bucket = []
-    values_bucket = []
-
-    for thinning_data in thinned_trees.removed:
-        volumes, values = _cross_cut(
-                            thinning_data.species,
-                            thinning_data.breast_height_diameter,
-                            thinning_data.height,
-                            timber_price_table
-                            )
-
-        #NOTE: the above 'volumes' and 'values' are calculated for a single reference tree. 
-        # To report absolute (i.e. not in per hectare terms) numbers, they must be multiplied by the reference tree's stems_removed_per_ha and the stand area (in hectares)
-        
-        multiplier = thinning_data.stems_removed_per_ha * stand_area/1000
-        volumes = [vol*multiplier for vol in volumes]
-        values = [val*multiplier for val in values]
-
-        volumes_bucket.append(volumes)
-        values_bucket.append(values)
     
-    return (volumes_bucket, values_bucket)
-
-
-
-def cross_cut_stand(stand: ForestStand, timber_price_table: np.ndarray) -> tuple[List[float], List[float]]:
-    """
-    Calculates the volume and value of cross cutting all the reference trees in the :stand:. 
-    Returns a tuple of (volumes, values) where volumes and values are lists of floats.
-    These lists are of size `(m, n)` where
-       `m` is the number of unique timber grades (puutavaralaji) and 
-        `n` is the count of cut reference trees.
-    it's left to the caller to generate aggregates from these.
-    """
-    volumes_bucket = []
-    values_bucket = []
-
-    for tree in stand.reference_trees:
-        volumes, values = _cross_cut(
-                            tree.species, 
-                            tree.breast_height_diameter, 
-                            tree.height, 
-                            timber_price_table
-                            )
-
-        #NOTE: the above 'volumes' and 'values' are calculated for a single reference tree. To report meaningful numbers,
-        # they must be multiplied by the reference tree's stem count per ha and the stand area (in hectares)
-        multiplier = tree.stems_per_ha * stand.area/1000 #area is given in square meters, thus need to convert to ha.
-        volumes = [vol*multiplier for vol in volumes] 
-        values = [val*multiplier for val in values]
-
-        volumes_bucket.append(volumes)
-        values_bucket.append(values)
-    
-    return (volumes_bucket, values_bucket)
-
-def calculate_cross_cut_aggregates(volumes: List[List[float]], values: List[List[float]]) -> Any:
-    total_volume = sum(map(sum, volumes))
-    total_value = sum(map(sum, values))
-
-    return (total_volume, total_value)

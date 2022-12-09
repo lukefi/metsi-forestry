@@ -2,7 +2,7 @@ import math
 import statistics
 from enum import Enum
 from forestdatamodel.model import ReferenceTree, ForestStand
-from typing import List, Callable
+from typing import List, Callable, Optional
 
 
 def compounded_growth_factor(growth_percent: float, years: int) -> float:
@@ -31,19 +31,22 @@ def solve_dominant_height_c_largest(stand, c: int = 100):
     return dw_sum / n if n > 0 else 0
 
 
-def overall_basal_area(stand: ForestStand) -> float:
-    """ Overall basal area of stand in square meters (m^2) """
-    return sum(calculate_basal_area(rt) for rt in stand.reference_trees)
+def overall_basal_area(trees: list[ReferenceTree]) -> float:
+    """ Overall basal area of trees in square meters (m^2) """
+    return sum(calculate_basal_area(rt) for rt in trees)
 
-def overall_stems_per_ha(stand: ForestStand) -> float:
+
+def overall_stems_per_ha(trees: list[ReferenceTree]) -> float:
     """ Sums up the stems of all reference trees """
-    return sum(rt.stems_per_ha for rt in stand.reference_trees)
+    return sum(rt.stems_per_ha for rt in trees)
 
 
-def solve_dominant_species(stand: ForestStand) -> Enum:
-    """ Solves dominant species of a stand based on basal area """
-    spe_ba = [ (rt.species, calculate_basal_area(rt)) for rt in stand.reference_trees ]
-    bucket = { x[0]: 0.0 for x in spe_ba }
+def solve_dominant_species(trees: list[ReferenceTree]) -> Optional[Enum]:
+    """ Solves dominant species of trees based on basal area """
+    if len(trees) == 0:
+        return None
+    spe_ba = [(rt.species, calculate_basal_area(rt)) for rt in trees]
+    bucket = {x[0]: 0.0 for x in spe_ba}
     for spe, basal_area in spe_ba:
         bucket[spe] += basal_area
     return max(bucket, key=bucket.get)
@@ -84,3 +87,13 @@ def calculate_basal_area_weighted_attribute_sum(reference_trees: List[ReferenceT
     basal_area_total = calculate_attribute_sum(reference_trees, calculate_basal_area)
     attribute_total = calculate_attribute_sum(reference_trees, f)
     return attribute_total / basal_area_total
+
+def mean_age_stand(stand: ForestStand) -> float:
+    stems = overall_stems_per_ha(stand.reference_trees)
+    if stems > 0:
+        agesum = sum(rt.stems_per_ha * rt.biological_age for rt in stand.reference_trees)
+        mean_age = agesum/stems
+    else:
+        mean_age = 0
+    return mean_age
+

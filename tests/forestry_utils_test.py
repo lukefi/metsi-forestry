@@ -35,7 +35,7 @@ class ForestryUtilsTest(unittest.TestCase):
             ReferenceTree(stems_per_ha=f)
             for f in stems
             ]
-        result = futil.overall_stems_per_ha(stand)
+        result = futil.overall_stems_per_ha(stand.reference_trees)
         self.assertEqual(300.0, result)
 
     def test_overall_basal_area(self):
@@ -46,7 +46,7 @@ class ForestryUtilsTest(unittest.TestCase):
             ReferenceTree(breast_height_diameter=d, stems_per_ha=f)
             for d, f in zip(diameters, stems)
             ]
-        result = futil.overall_basal_area(stand)
+        result = futil.overall_basal_area(stand.reference_trees)
         self.assertEqual(2.8702, round(result, 4))
 
     def test_solve_dominant_species(self):
@@ -58,8 +58,8 @@ class ForestryUtilsTest(unittest.TestCase):
             ReferenceTree(breast_height_diameter=d, stems_per_ha=f, species=s)
             for d, f, s in zip(diameters, stems, species)
             ]
-        result = futil.solve_dominant_species(stand)
-        self.assertEqual(TreeSpecies.SPRUCE, result)
+        self.assertEqual(TreeSpecies.SPRUCE, futil.solve_dominant_species(stand.reference_trees))
+        self.assertEqual(None, futil.solve_dominant_species([]))
 
     def test_calculate_basal_area(self):
         tree = ReferenceTree()
@@ -119,3 +119,17 @@ class ForestryUtilsTest(unittest.TestCase):
         for i in assertions:
             result = futil.compounded_growth_factor(i[0][0], i[0][1])
             self.assertEqual(i[1], round(result, 3))
+
+    def test_mean_age_stand(self):
+        stand = ForestStand()
+        self.assertEqual(0,futil.mean_age_stand(stand))
+        stand.reference_trees = []
+        for i in range(1, 30):
+            reference_tree = ReferenceTree()
+            reference_tree.species = 1
+            reference_tree.biological_age = 60 - i
+            reference_tree.breast_height_diameter = 10.0 + i
+            reference_tree.stems_per_ha = 50.0 + i
+            stand.reference_trees.append(reference_tree)
+        self.assertEqual(43.92307692307692,futil.mean_age_stand(stand))
+ 
