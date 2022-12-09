@@ -7,10 +7,29 @@ from forestryfunctions.preprocessing import distributions
 from forestryfunctions.preprocessing.naslund import naslund_height
 
 class TreeStrategy(Enum):
-    SAPLING_TREE = 'sapling_tree'
     WEIBULL_DISTRIBUTION = 'weibull_distribution'
-    HEIGHT_DISTRIBUTION = 'height_distribution'
+    HEIGHT_DISTRIBUTION = 'HEIGHT_DISTRIBUTION'
     SKIP = 'skip_tree_generation'
+
+
+def finalize_trees(reference_trees: List[ReferenceTree], stratum: TreeStratum) -> List[ReferenceTree]:
+    """ For all given trees inflates the common variables from stratum. """
+    n_trees = len(reference_trees)
+    for i, reference_tree in enumerate(reference_trees):
+        reference_tree.stand = stratum.stand
+        reference_tree.species = stratum.species
+        reference_tree.breast_height_age = 0.0 if n_trees == 1 else stratum.get_breast_height_age()
+        reference_tree.biological_age = stratum.biological_age
+        if reference_tree.breast_height_age == 0.0 and reference_tree.breast_height_diameter > 0.0:
+            reference_tree.breast_height_age = 1.0
+        reference_tree.tree_number = i + 1
+        reference_tree.stems_per_ha = None if reference_tree.stems_per_ha is None \
+            else round(reference_tree.stems_per_ha, 2)
+        reference_tree.breast_height_diameter = None if reference_tree.breast_height_diameter is None \
+            else round(reference_tree.breast_height_diameter, 2)
+        reference_tree.height = None if reference_tree.height is None \
+            else round(reference_tree.height, 2)
+    return reference_trees
 
 
 def trees_from_weibull(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree]:
@@ -35,16 +54,12 @@ def trees_from_weibull(stratum: TreeStratum, n_trees: int) -> List[ReferenceTree
     return result
 
 
-def finalize_trees(reference_trees: List[ReferenceTree], stratum: TreeStratum) -> List[ReferenceTree]:
-    """ For all given trees inflates the common variables from stratum. """
-    n_trees = len(reference_trees)
-    for i, reference_tree in enumerate(reference_trees):
-        reference_tree.stand = stratum.stand
-        reference_tree.species = stratum.species
-        reference_tree.breast_height_age = 0.0 if n_trees == 1 else stratum.get_breast_height_age()
-        reference_tree.biological_age = stratum.biological_age
-        reference_tree.tree_number = i + 1
-    return reference_trees
+def trees_from_sapling_height_distribution(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
+    """  Generate N trees from height distribution """
+    return distributions.sapling_height_distribution(
+        stratum,
+        0.0,
+        n_trees)
 
 
 def solve_tree_generation_strategy(stratum: TreeStratum) -> str:
@@ -60,47 +75,32 @@ def solve_tree_generation_strategy(stratum: TreeStratum) -> str:
     else:
         # small trees
         if stratum.has_height() and stratum.has_sapling_stems_per_ha():
-            return TreeStrategy.SAPLING_TREE
+            return TreeStrategy.HEIGHT_DISTRIBUTION
         else:
             return TreeStrategy.SKIP
 
 
-def solve_reference_tree_count(stratum: TreeStratum, value: Optional[int]) -> Optional[int]:
-    """ Solve reference tree count or use given value"""
-    if value is None:
-        if stratum.has_height():
-            return 10 if stratum.has_height_over_130_cm() else 1
-        else:
-            return None
-    else:
-        return value
-
-
-
-def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[int] = None) -> List[ReferenceTree]:
+def reference_trees_from_tree_stratum(stratum: TreeStratum, n_trees: Optional[int] = 10) -> List[ReferenceTree]:
     """ Composes N number of reference trees based on values of the stratum.
 
-    The tree generation strategies: weibull distribution, height distribution and singel tree generation.
-    From big trees generation strategies are weibull distribution (primary) and height distribution (secondary).
-    For small trees a single tree (n_trees == 1) is generated when possible.
+    The tree generation strategies: weibull distribution and height distribution.
+    For big trees generation strategies are weibull and height distributions.
+    Small trees (height < 1.3 meters) are generated with height distribution.
 
-    Big trees need diameter, height and basal area or stem count for the generation process to succeed.
-    Small trees need only height and stem count.
+    Big trees need diameter (cm), height (m) and basal area or stem count for the generation process to succeed.
+    Small trees need only height (m) and sapling stem count.
     All other cases are skipped.
 
     :param stratum: Single stratum instance.
-    :param (optional) n_trees: Number of reference trees to be generated.
+    :param (optional) n_trees: Number of reference trees to be generated (10 by default).
     :return: List of reference trees derived from given stratum.
     """
-    n_trees = solve_reference_tree_count(stratum, n_trees)
     strategy = solve_tree_generation_strategy(stratum)
     result = []
-    if strategy == TreeStrategy.SAPLING_TREE:
-        result.append(stratum.to_sapling_reference_tree())
+    if strategy == TreeStrategy.HEIGHT_DISTRIBUTION:
+        result = trees_from_sapling_height_distribution(stratum, n_trees)
     elif strategy == TreeStrategy.WEIBULL_DISTRIBUTION:
         result = trees_from_weibull(stratum, n_trees)
-    elif strategy == TreeStrategy.HEIGHT_DISTRIBUTION:
-        result = distributions.simple_height_distribution(stratum, n_trees)
     elif strategy == TreeStrategy.SKIP:
         return []
     else:
