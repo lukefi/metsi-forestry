@@ -7,6 +7,9 @@ from parameterized import parameterized
 
 import forestryfunctions.r_utils as r_utils
 from forestryfunctions.cross_cutting import cross_cutting
+from forestryfunctions.cross_cutting.cross_cutting import (
+    ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VALUE,
+    ZERO_DIAMETER_TREE_VOLUME)
 from tests.test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
 
 
@@ -51,3 +54,13 @@ class CrossCuttingTest(TestCaseExtension):
 
         self.assertTrue(np.array_equal(py_volumes, r_volumes))
         self.assertTrue(np.array_equal(py_values, r_values))
+
+
+    def test_cross_cut_zero_dbh_tree_returns_constant_values(self):
+        for dbh in [0, None]:
+            unique_timber_grades, volumes, values = cross_cutting.cross_cut(TreeSpecies.PINE, dbh, 10, DEFAULT_TIMBER_PRICE_TABLE)
+            self.assertTrue(len(unique_timber_grades) == len(volumes) == len(values) == 1)
+            self.assertEqual(unique_timber_grades[0], ZERO_DIAMETER_TREE_TIMBER_GRADE)
+            self.assertEqual(volumes[0], ZERO_DIAMETER_TREE_VOLUME)
+            self.assertEqual(values[0], ZERO_DIAMETER_TREE_VALUE)
+        self.assertRaises(ValueError, cross_cutting.cross_cut, *(TreeSpecies.PINE, -1, 10, DEFAULT_TIMBER_PRICE_TABLE))

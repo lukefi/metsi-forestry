@@ -11,6 +11,10 @@ _cross_cut_species_mapper = {
     TreeSpecies.SILVER_BIRCH: "birch"
 }
 
+ZERO_DIAMETER_TREE_TIMBER_GRADE = 3 # = energy wood
+ZERO_DIAMETER_TREE_VOLUME = 0.000045 # m3
+ZERO_DIAMETER_TREE_VALUE = 20 #€/m3
+
 
 def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -78,18 +82,22 @@ def cross_cut(
         timber_price_table,
         div = 10
         ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Returns a tuple containing unique timber grades and their respective volumes and values."""
-    species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
-    
-    #the original cross-cut scripts rely on the height being an integer, thus rounding.
-    height = round(height)
+    """
+    Returns a tuple containing unique timber grades and their respective volumes and values.
+    If :breast_height_diameter: is 0 or none, the Nasberg cross cutting algorithm can't be applied. 
+    In this case, returns hardcoded constants.
+    """
+    if breast_height_diameter is not None and breast_height_diameter < 0:
+        raise ValueError("breast_height_diameter must be a non-negative number")
+    if breast_height_diameter in (None, 0):
+        return (np.array([ZERO_DIAMETER_TREE_TIMBER_GRADE]), np.array([ZERO_DIAMETER_TREE_VOLUME]), np.array([ZERO_DIAMETER_TREE_VALUE]))
+    else:
+        species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
+        #the original cross-cut scripts rely on the height being an integer, thus rounding.
+        height = round(height)
+        n = int((height*100)/div-1)
+        T = stem_profile.create_tree_stem_profile(species_string, breast_height_diameter, height, n)
+        P = timber_price_table
+        m = P.shape[0]
 
-    n = int((height*100)/div-1)
-    T = stem_profile.create_tree_stem_profile(species_string, breast_height_diameter, height, n)
-    P = timber_price_table
-    m = P.shape[0]
-
-    return apteeraus_Nasberg(T, P, m, n, div)
-
-
-    
+        return apteeraus_Nasberg(T, P, m, n, div)
