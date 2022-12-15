@@ -2,7 +2,6 @@ from collections import defaultdict
 import math
 from statistics import median
 from forestdatamodel.model import ReferenceTree, TreeSpecies
-from forestryfunctions.forestry_utils import compounded_growth_factor
 
 def yearly_diameter_growth_by_species(
     spe: TreeSpecies,
@@ -72,7 +71,7 @@ def grow_diameter_and_height(
         group[t.species].append(i)
     ds = [t.breast_height_diameter or 0 for t in trees]
     hs = [t.height for t in trees]
-    for _ in range(1):
+    for s in range(step):
         bigh = [h for h in hs if h>=1.3]
         if bigh:
             hdom = median(bigh)
@@ -80,15 +79,15 @@ def grow_diameter_and_height(
             G = sum(gs)
             for spe,idx in group.items():
                 gg = sum(gs[i] for i in idx)
-                ag = sum(trees[i].biological_age*gs[i] for i in idx) / gg
+                ag = sum((trees[i].biological_age+s)*gs[i] for i in idx) / gg
                 dg = sum(ds[i]*gs[i] for i in idx) / gg
                 hg = sum(hs[i]*gs[i] for i in idx) / gg
                 for i in idx:
                     if hs[i] >= 1.3:
-                        dx = yearly_diameter_growth_by_species(spe, ds[i], hs[i], ag, dg, hg, hdom, G)
-                        hx = yearly_height_growth_by_species(spe, ds[i], hs[i], ag, dg, hg, G)
-                        ds[i] *= compounded_growth_factor(dx, step)
-                        hs[i] *= compounded_growth_factor(hx, step)
+                        pd = yearly_diameter_growth_by_species(spe, ds[i], hs[i], ag, dg, hg, hdom, G)/100
+                        ph = yearly_height_growth_by_species(spe, ds[i], hs[i], ag, dg, hg, G)/100
+                        ds[i] *= 1+pd
+                        hs[i] *= 1+ph
         for i,h in enumerate(hs):
             if h < 1.3:
                 hs[i] += 0.3

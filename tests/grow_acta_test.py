@@ -65,12 +65,12 @@ class GrowActaTest(unittest.TestCase):
             for d, h, f, spe, age in zip(diameters, heights, stems, species, ages)
         ]
         resd, resh = grow_acta.grow_diameter_and_height(reference_trees)
-        self.assertEqual(21.5922, round(resd[0], 4))
-        self.assertEqual(24.2359, round(resh[0], 4))
-        self.assertEqual(22.9209, round(resd[1], 4))
-        self.assertEqual(24.443, round(resh[1], 4))
-        self.assertEqual(23.6697, round(resd[2], 4))
-        self.assertEqual(26.2199, round(resh[2], 4))
+        self.assertAlmostEqual(21.5682, resd[0], places=4)
+        self.assertAlmostEqual(24.1751, resh[0], places=4)
+        self.assertAlmostEqual(22.8763, resd[1], places=4)
+        self.assertAlmostEqual(24.3788, resh[1], places=4)
+        self.assertAlmostEqual(23.6416, resd[2], places=4)
+        self.assertAlmostEqual(26.1624, resh[2], places=4)
 
     def test_grow_sapling(self):
         diameters = [1.0, 1.1, 1.2]
@@ -79,7 +79,7 @@ class GrowActaTest(unittest.TestCase):
             ReferenceTree(breast_height_diameter=d, height=h)
             for d, h in zip(diameters, heights)
         ]
-        resd, resh = grow_acta.grow_diameter_and_height(sapling_trees)
+        resd, resh = grow_acta.grow_diameter_and_height(sapling_trees, step=1)
         self.assertEqual(1.0, resd[0])
         self.assertEqual(1.1, resd[1])
         self.assertEqual(1.2, resd[2])
