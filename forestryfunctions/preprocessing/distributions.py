@@ -222,7 +222,7 @@ def weibull_sapling(height: float, stem_count: float, dominant_height: float, n_
         reference_tree = ReferenceTree()
         Ph = float(i+1) * classN - classH         # class center
         hi = b * (-math.log(1.0 - Ph))**(1.0 / c) + a   # picking up height from the cumulative Weibull distribution. Analytical solution.
-        reference_tree.height = hi
+        reference_tree.height = round(hi, 2)
 
         reference_tree.stems_per_ha = Nh
         reference_tree.sapling = True

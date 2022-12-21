@@ -62,7 +62,7 @@ class TestDistributions(test_util.ConverterTestSuite):
             # stems_per_ha=33.0;
             # breast_height_age=0.0;
             # biological_age=5;
-            [1, stand, 0.0, 1.56, 2.04, 33.0, 8, 12]
+            [1, stand, 0.0, 1.57, 2.04, 33.0, 8, 12]
         ]
 
         # Derive results
