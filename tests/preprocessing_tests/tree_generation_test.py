@@ -145,7 +145,7 @@ class TestTreeGeneration(unittest.TestCase):
             # stems_per_ha=9.9;
             # breast_height_age=15;
             # biological_age=16;
-            22.28, 18.36, 9.9, 15, 16, # result[0]
+            22.27, 18.36, 9.9, 15, 16, # result[0]
             # diameter=28.0;
             # height=22.0;
             # stems_per_ha=9.9;
