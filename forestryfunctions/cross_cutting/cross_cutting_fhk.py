@@ -6,6 +6,9 @@ from forestdatamodel.model import TreeSpecies
 import fhk
 import numpy as np
 
+from forestryfunctions.cross_cutting.cross_cutting import ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VOLUME, \
+    ZERO_DIAMETER_TREE_VALUE
+
 CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]
 
 @dataclass
@@ -73,6 +76,10 @@ def cross_cut_func(P: np.ndarray) -> CrossCutFn:
         h: float,
         mem: Optional[fhk.Mem] = None
     ) -> tuple[Sequence[int], Sequence[float], Sequence[float]]:
+        if d is not None and d < 0:
+            raise ValueError("breast_height_diameter must be a non-negative number")
+        if d in (None, 0):
+            return (np.array([ZERO_DIAMETER_TREE_TIMBER_GRADE]), np.array([ZERO_DIAMETER_TREE_VOLUME]), np.array([ZERO_DIAMETER_TREE_VALUE]))
         r = query(Args(spe=spe, d=d, h=round(h)), mem=mem)
         vol, val = [], []
         for i in range(0, len(retnames), 2):
