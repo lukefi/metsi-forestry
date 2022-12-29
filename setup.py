@@ -4,8 +4,11 @@ from setuptools import setup
 setup(
     name="forestryfunctions",
     description="Forestry functions for manipulating state of forest-data-model instances",
-    version="0.12.1",
+    version="1.0.0-rc1",
     packages=setuptools.find_namespace_packages(include=['forestryfunctions*']),
     package_data={'forestryfunctions': ['r/*']},
-    dependency_links=['https://github.com/menu-hanke/forest-data-model@0.4.7#egg=forestdatamodel']
+    dependency_links=['https://github.com/menu-hanke/forest-data-model@1.0.0-rc1#egg=forestdatamodel'],
+    install_requires=[
+        "scipy==1.7.*"
+    ]
 )
