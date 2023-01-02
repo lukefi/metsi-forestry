@@ -17,8 +17,8 @@ namespace directories.
 For using the Lua variant of the cross-cutting function, the FHK library is needed. Unfortunately this needs to be done
 manually for the time being. The FHK library is published as a multiwheel directory in
 https://github.com/menu-hanke/fhk/releases/expanded_assets/v4.0.0 but the pyproject.toml configuration does not allow
-for this format to be included as a dependency. For the time being, manual run of `pip install -r requirements.txt` is
-necessary to introduce this dependency to local environment.
+for this format to be included as a dependency. For the time being, manual run of `pip install -r requirements-fhk.txt`
+is necessary to introduce this dependency to local environment.
 
 For using the R based volume estimation function `lmfor_volume`, the `rpy2` library is needed. Manual run
 of `pip install .[rpy]` is necessary.

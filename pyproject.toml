@@ -16,7 +16,7 @@ dependencies = [
     "scipy==1.7.*",
     "lukefi.metsi.data @ https://github.com/lukefi/metsi-data/archive/refs/tags/1.0.0.zip",
     #TODO: there is no way to include multiwheels from a directory over HTTPS in pyproject.toml
-    #Still need to use pip install -r requirements.txt
+    #Still need to use pip install -r requirements-fhk.txt
     #"https://github.com/menu-hanke/fhk/releases/expanded_assets/v4.0.0"
 ]
 
