@@ -1,4 +1,2 @@
-git+https://github.com/menu-hanke/forest-data-model@1.0.0-rc1#egg=forestdatamodel
-scipy==1.7.*
 fhk
 -f https://github.com/menu-hanke/fhk/releases/expanded_assets/v4.0.0
