@@ -1,5 +1,5 @@
 from typing import Callable
-from forestdatamodel.model import ForestStand
+from lukefi.metsi.data.model import ForestStand
 
 def iterative_thinning(
         stand: ForestStand,

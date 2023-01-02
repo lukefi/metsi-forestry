@@ -1,5 +1,5 @@
 import numpy as np
-from forestdatamodel.enums.internal import TreeSpecies
+from lukefi.metsi.data.enums.internal import TreeSpecies
 
 from lukefi.metsi.forestry.cross_cutting import stem_profile
 

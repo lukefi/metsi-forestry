@@ -1,5 +1,5 @@
 import typing
-from forestdatamodel.model import ReferenceTree, TreeStratum
+from lukefi.metsi.data.model import ReferenceTree, TreeStratum
 
 STRATUM_SUPPLEMENT = 1
 INITIAL_TREE_SUPPLEMENT = 2

@@ -1,7 +1,7 @@
 import math
 import statistics
 from enum import Enum
-from forestdatamodel.model import ReferenceTree, ForestStand
+from lukefi.metsi.data.model import ReferenceTree, ForestStand
 from typing import List, Callable, Optional
 
 

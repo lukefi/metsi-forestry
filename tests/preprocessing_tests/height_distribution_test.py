@@ -1,4 +1,4 @@
-from forestdatamodel.model import TreeStratum
+from lukefi.metsi.data.model import TreeStratum
 from lukefi.metsi.forestry.preprocessing import distributions
 from tests import test_util
 

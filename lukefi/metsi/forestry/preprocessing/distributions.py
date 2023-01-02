@@ -6,7 +6,7 @@
 """
 import math
 from typing import Optional, List, Tuple
-from forestdatamodel.model import ReferenceTree, TreeStratum
+from lukefi.metsi.data.model import ReferenceTree, TreeStratum
 from lukefi.metsi.forestry.preprocessing import pre_util
 
 

@@ -1,5 +1,5 @@
 from collections import namedtuple
-from forestdatamodel.model import TreeStratum, ForestStand
+from lukefi.metsi.data.model import TreeStratum, ForestStand
 from lukefi.metsi.forestry.preprocessing import tree_generation
 
 from tests import test_util

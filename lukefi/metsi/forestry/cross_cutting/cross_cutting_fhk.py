@@ -2,7 +2,7 @@ from dataclasses import dataclass, field, fields, make_dataclass
 from json import dumps
 from pathlib import Path
 from typing import Callable, Iterable, Optional, Sequence
-from forestdatamodel.model import TreeSpecies
+from lukefi.metsi.data.model import TreeSpecies
 import fhk
 import numpy as np
 

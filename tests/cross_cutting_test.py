@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 import rpy2.robjects as robjects
-from forestdatamodel.enums.internal import TreeSpecies
+from lukefi.metsi.data.enums.internal import TreeSpecies
 from parameterized import parameterized
 
 import lukefi.metsi.forestry.r_utils as r_utils

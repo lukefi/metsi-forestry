@@ -1,7 +1,7 @@
 from collections import defaultdict
 import math
 from statistics import median
-from forestdatamodel.model import ReferenceTree, TreeSpecies
+from lukefi.metsi.data.model import ReferenceTree, TreeSpecies
 
 def yearly_diameter_growth_by_species(
     spe: TreeSpecies,

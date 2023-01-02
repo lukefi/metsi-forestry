@@ -1,6 +1,6 @@
 """ Tests suites for forestryfunctions.preprocessing.* modules """
 import unittest
-from forestdatamodel.model import TreeStratum, ReferenceTree
+from lukefi.metsi.data.model import TreeStratum, ReferenceTree
 from lukefi.metsi.forestry.preprocessing import pre_util
 
 

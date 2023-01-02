@@ -1,6 +1,6 @@
 import unittest
-from forestdatamodel.model import ForestStand, ReferenceTree
-from forestdatamodel.enums.internal import TreeSpecies
+from lukefi.metsi.data.model import ForestStand, ReferenceTree
+from lukefi.metsi.data.enums.internal import TreeSpecies
 from lukefi.metsi.forestry.harvest import thinning
 from lukefi.metsi.forestry import forestry_utils as futil
 

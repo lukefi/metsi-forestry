@@ -1,6 +1,6 @@
 """ Module contains basic, domain and state spesific utility functions used in preprocessing operations"""
 from typing import Optional, List, Tuple, Any
-from forestdatamodel.model import ReferenceTree, TreeStratum, ForestStand
+from lukefi.metsi.data.model import ReferenceTree, TreeStratum, ForestStand
 
 
 # ---- basic utils ----

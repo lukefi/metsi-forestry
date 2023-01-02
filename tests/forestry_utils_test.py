@@ -1,7 +1,7 @@
 import unittest
 from lukefi.metsi.forestry import forestry_utils as futil
-from forestdatamodel.model import ReferenceTree, ForestStand
-from forestdatamodel.enums.internal import TreeSpecies
+from lukefi.metsi.data.model import ReferenceTree, ForestStand
+from lukefi.metsi.data.enums.internal import TreeSpecies
 
 
 class ForestryUtilsTest(unittest.TestCase):

@@ -1,4 +1,4 @@
-from forestdatamodel.enums.internal import TreeSpecies
+from lukefi.metsi.data.enums.internal import TreeSpecies
 from lukefi.metsi.forestry.preprocessing import naslund
 from tests import test_util
 

@@ -1,5 +1,5 @@
 import unittest
-from forestdatamodel.model import ReferenceTree
+from lukefi.metsi.data.model import ReferenceTree
 from lukefi.metsi.forestry.naturalprocess import grow_acta
 
 
