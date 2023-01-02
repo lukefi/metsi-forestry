@@ -2,9 +2,14 @@ import unittest
 
 from lukefi.metsi.data.enums.internal import TreeSpecies
 from lukefi.metsi.data.model import ForestStand, ReferenceTree
-import lukefi.metsi.forestry.r_utils as r_utils
+try:
+    unrunnable = False
+    import lukefi.metsi.forestry.r_utils as r_utils
+except ImportError:
+    unrunnable = True
 
 
+@unittest.skipIf(unrunnable, "rpy2 not installed")
 class RUtilsTest(unittest.TestCase):
     def test_lmfor_volume(self):
         fixture = ForestStand(degree_days=720.3)

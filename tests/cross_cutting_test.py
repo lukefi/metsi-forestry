@@ -2,25 +2,27 @@ from typing import Dict
 import unittest
 
 import numpy as np
-import rpy2.robjects as robjects
+
 from lukefi.metsi.data.enums.internal import TreeSpecies
 from parameterized import parameterized
 
-import lukefi.metsi.forestry.r_utils as r_utils
+
 from lukefi.metsi.forestry.cross_cutting import cross_cutting
 from lukefi.metsi.forestry.cross_cutting.cross_cutting import (
     ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VALUE,
     ZERO_DIAMETER_TREE_VOLUME)
 from tests.test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
-
+unrunnable = False
 try:
     from lukefi.metsi.forestry.cross_cutting.cross_cutting_fhk import cross_cut_func
+    import rpy2.robjects as robjects
+    import lukefi.metsi.forestry.r_utils as r_utils
 except ImportError:
-    cross_cut_func = None
+    unrunnable = True
 
 
+@unittest.skipIf(unrunnable, "fhk or rpy2 not installed")
 class CrossCuttingTest(TestCaseExtension):
-
     def _cross_cut_with_r(
         self,
         species: TreeSpecies,
@@ -40,7 +42,6 @@ class CrossCuttingTest(TestCaseExtension):
         result = r_utils.convert_r_named_list_to_py_dict(result)
         return (result["volumes"], result["values"])
 
-    
     @parameterized.expand([
         (TreeSpecies.PINE,30,25),
         (TreeSpecies.UNKNOWN_CONIFEROUS, 15.57254199723247, 18.293846547993535),
@@ -61,7 +62,6 @@ class CrossCuttingTest(TestCaseExtension):
         self.assertTrue(np.array_equal(py_volumes, r_volumes))
         self.assertTrue(np.array_equal(py_values, r_values))
 
-    @unittest.skipIf(cross_cut_func is None, "fhk not installed")
     @parameterized.expand([
         (TreeSpecies.UNKNOWN_CONIFEROUS, 15.57254199723247, 18.293846547993535),
         (TreeSpecies.PINE,30,25),

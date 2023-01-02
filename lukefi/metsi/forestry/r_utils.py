@@ -4,10 +4,7 @@ from typing import Any, Dict
 from lukefi.metsi.data.enums.internal import TreeSpecies
 from lukefi.metsi.data.model import ForestStand
 
-try:
-    import rpy2.robjects as robjects
-except ImportError:
-    pass
+import rpy2.robjects as robjects
 
 initialised = False
 
