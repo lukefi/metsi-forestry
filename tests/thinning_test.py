@@ -1,9 +1,9 @@
 import unittest
 from forestdatamodel.model import ForestStand, ReferenceTree
 from forestdatamodel.enums.internal import TreeSpecies
-from forestryfunctions.harvest import thinning
-from forestryfunctions import forestry_utils as futil
-from test_util import DEFAULT_TIMBER_PRICE_TABLE
+from lukefi.metsi.forestry.harvest import thinning
+from lukefi.metsi.forestry import forestry_utils as futil
+
 
 class ThinningTest(unittest.TestCase):
 

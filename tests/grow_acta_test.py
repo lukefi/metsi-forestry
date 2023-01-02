@@ -1,6 +1,7 @@
 import unittest
-from forestdatamodel.model import ForestStand, ReferenceTree
-from forestryfunctions.naturalprocess import grow_acta
+from forestdatamodel.model import ReferenceTree
+from lukefi.metsi.forestry.naturalprocess import grow_acta
+
 
 class GrowActaTest(unittest.TestCase):
     def test_yearly_diameter_growth_by_species(self):

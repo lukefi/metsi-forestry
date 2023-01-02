@@ -1,7 +1,7 @@
 import numpy as np
 from forestdatamodel.enums.internal import TreeSpecies
 
-from forestryfunctions.cross_cutting import stem_profile
+from lukefi.metsi.forestry.cross_cutting import stem_profile
 
 _cross_cut_species_mapper = {
     TreeSpecies.PINE: "pine",

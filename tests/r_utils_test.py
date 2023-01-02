@@ -2,7 +2,7 @@ import unittest
 
 from forestdatamodel.enums.internal import TreeSpecies
 from forestdatamodel.model import ForestStand, ReferenceTree
-import forestryfunctions.r_utils as r_utils
+import lukefi.metsi.forestry.r_utils as r_utils
 
 
 class RUtilsTest(unittest.TestCase):

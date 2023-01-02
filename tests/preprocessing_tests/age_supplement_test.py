@@ -1,5 +1,5 @@
 import unittest
-from forestryfunctions.preprocessing import age_supplementing as age_sup
+from lukefi.metsi.forestry.preprocessing import age_supplementing as age_sup
 from forestdatamodel.model import TreeStratum, ReferenceTree
 from collections import namedtuple
 

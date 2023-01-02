@@ -6,15 +6,15 @@ import rpy2.robjects as robjects
 from forestdatamodel.enums.internal import TreeSpecies
 from parameterized import parameterized
 
-import forestryfunctions.r_utils as r_utils
-from forestryfunctions.cross_cutting import cross_cutting
-from forestryfunctions.cross_cutting.cross_cutting import (
+import lukefi.metsi.forestry.r_utils as r_utils
+from lukefi.metsi.forestry.cross_cutting import cross_cutting
+from lukefi.metsi.forestry.cross_cutting.cross_cutting import (
     ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VALUE,
     ZERO_DIAMETER_TREE_VOLUME)
 from tests.test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
 
 try:
-    from forestryfunctions.cross_cutting.cross_cutting_fhk import cross_cut_func
+    from lukefi.metsi.forestry.cross_cutting.cross_cutting_fhk import cross_cut_func
 except ImportError:
     cross_cut_func = None
 

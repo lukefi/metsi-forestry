@@ -3,11 +3,8 @@ import unittest
 from collections import namedtuple
 from forestdatamodel.model import TreeStratum, ReferenceTree, ForestStand
 from forestdatamodel.enums.internal import TreeSpecies
-from forestryfunctions.preprocessing import distributions
-from forestryfunctions.preprocessing import naslund
-from forestryfunctions.preprocessing import pre_util
-from forestryfunctions.preprocessing import tree_generation
-from tests import test_util
+from lukefi.metsi.forestry.preprocessing import tree_generation
+
 
 class TestTreeGeneration(unittest.TestCase):
 

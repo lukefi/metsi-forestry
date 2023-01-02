@@ -1,4 +1,4 @@
-from forestryfunctions.cross_cutting.taper_curves import TAPER_CURVES
+from lukefi.metsi.forestry.cross_cutting.taper_curves import TAPER_CURVES
 import numpy as np
 from scipy import integrate
 

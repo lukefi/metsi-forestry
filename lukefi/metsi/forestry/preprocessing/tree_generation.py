@@ -1,10 +1,9 @@
 """ Module contains tree generation logic that uses distribution based tree generation models (see. distributions module) """
-import math
-from typing import Optional, List, Tuple
-from forestdatamodel.model import ReferenceTree, TreeStratum, ForestStand
+from typing import Optional, List
+from forestdatamodel.model import ReferenceTree, TreeStratum
 from enum import Enum
-from forestryfunctions.preprocessing import distributions
-from forestryfunctions.preprocessing.naslund import naslund_height
+from lukefi.metsi.forestry.preprocessing import distributions
+from lukefi.metsi.forestry.preprocessing.naslund import naslund_height
 
 class TreeStrategy(Enum):
     WEIBULL_DISTRIBUTION = 'weibull_distribution'

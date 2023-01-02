@@ -6,9 +6,8 @@
 """
 import math
 from typing import Optional, List, Tuple
-from forestdatamodel.model import ReferenceTree, TreeStratum, ForestStand
-from forestryfunctions.preprocessing import pre_util
-from enum import Enum
+from forestdatamodel.model import ReferenceTree, TreeStratum
+from lukefi.metsi.forestry.preprocessing import pre_util
 
 
 # ---- Weibull distribution model ----

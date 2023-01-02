@@ -1,6 +1,5 @@
-import unittest
 from forestdatamodel.enums.internal import TreeSpecies
-from forestryfunctions.preprocessing import naslund
+from lukefi.metsi.forestry.preprocessing import naslund
 from tests import test_util
 
 

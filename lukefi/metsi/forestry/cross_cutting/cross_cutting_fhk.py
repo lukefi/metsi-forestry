@@ -6,7 +6,7 @@ from forestdatamodel.model import TreeSpecies
 import fhk
 import numpy as np
 
-from forestryfunctions.cross_cutting.cross_cutting import ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VOLUME, \
+from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VOLUME, \
     ZERO_DIAMETER_TREE_VALUE
 
 CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]

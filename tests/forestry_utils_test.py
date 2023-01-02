@@ -1,5 +1,5 @@
 import unittest
-from forestryfunctions import forestry_utils as futil
+from lukefi.metsi.forestry import forestry_utils as futil
 from forestdatamodel.model import ReferenceTree, ForestStand
 from forestdatamodel.enums.internal import TreeSpecies
 

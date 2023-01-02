@@ -1,8 +1,6 @@
-import unittest
 from collections import namedtuple
-from forestdatamodel.model import TreeStratum, ReferenceTree, ForestStand
-from forestdatamodel.enums.internal import TreeSpecies
-from forestryfunctions.preprocessing import tree_generation
+from forestdatamodel.model import TreeStratum, ForestStand
+from lukefi.metsi.forestry.preprocessing import tree_generation
 
 from tests import test_util
 

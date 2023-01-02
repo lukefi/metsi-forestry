@@ -2,12 +2,12 @@ import setuptools
 from setuptools import setup
 
 setup(
-    name="forestryfunctions",
-    description="Forestry functions for manipulating state of forest-data-model instances",
+    name="lukefi.metsi.forestry",
+    description="Forestry functions for manipulating state of metsi-data model instances",
     version="1.0.0-rc3",
-    packages=setuptools.find_namespace_packages(include=['forestryfunctions*']),
-    package_data={'forestryfunctions': ['r/*', 'lua/*']},
-    dependency_links=['https://github.com/menu-hanke/forest-data-model@1.0.0-rc1#egg=forestdatamodel'],
+    packages=setuptools.find_namespace_packages(include=['lukefi.metsi.forestry*']),
+    package_data={'lukefi.metsi.forestry': ['r/*', 'lua/*']},
+    dependency_links=['https://github.com/lukefi/metsi_data@1.0.0'],
     install_requires=[
         "scipy==1.7.*"
     ]
