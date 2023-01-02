@@ -1,7 +1,7 @@
 [project]
 name = "lukefi.metsi.forestry"
 description = "Models and functions for forestry computation."
-version = "1.0.0"
+version = "1.0.1"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
@@ -28,3 +28,7 @@ tests = [
 rpy = [
     "rpy2==3.5.2"
 ]
+
+[tool.setuptools.package-data]
+"lukefi.metsi.forestry.lua" = ["*"]
+"lukefi.metsi.forestry.r" = ["*"]
