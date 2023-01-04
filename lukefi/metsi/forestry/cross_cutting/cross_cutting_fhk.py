@@ -40,7 +40,7 @@ def defineapt(graph: fhk.Graph, P: np.ndarray, retnames: Iterable[str], div: flo
             impl.Lua {{
                 "crosscut",
                 load = function(pkg)
-                    return pkg.aptfunc(
+                    return pkg.aptfunc_fhk(
                         {ltab(P[:,0])},
                         {ltab(P[:,1])},
                         {ltab(P[:,2])},

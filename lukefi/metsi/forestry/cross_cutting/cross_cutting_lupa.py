@@ -17,7 +17,7 @@ def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
         script = file.read()
 
     lua = lupa.LuaRuntime(unpack_returned_tuples=True)
-    fn = lua.execute(script)['aptfunc']
+    fn = lua.execute(script)['aptfunc_lupa']
     pcls = lua.table_from(P[:, 0])
     ptop = lua.table_from(P[:, 1])
     plen = lua.table_from(P[:, 2])
@@ -37,10 +37,7 @@ def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
             raise ValueError("breast_height_diameter must be a non-negative number")
         if d in (None, 0):
             return (np.array([ZERO_DIAMETER_TREE_TIMBER_GRADE]), np.array([ZERO_DIAMETER_TREE_VOLUME]), np.array([ZERO_DIAMETER_TREE_VALUE]))
-        result = aptfunc(spe, d, h)
-        vol, val = [], []
-        for i in range(0, len(nas)*2, 2):
-            vol.append(result[i])
-            val.append(result[i+1])
-        return list(map(int, np.unique(P[:, 0]))), vol, val
+
+        vol, val = aptfunc(spe, d, h)
+        return list(map(int, np.unique(P[:, 0]))), list(vol.values()), list(val.values())
     return cc

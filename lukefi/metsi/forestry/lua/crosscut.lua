@@ -293,12 +293,19 @@ local function aptunpack(i, vol, val)
 	end
 end
 
-local function aptfunc(pcls, ptop, plen, pval, m, div, nas)
+local function aptfunc_fhk(pcls, ptop, plen, pval, m, div, nas)
 	return function(spe, d, h)
 		return aptunpack(1, apt(spe, d, h, pcls, ptop, plen, pval, m, div, nas))
 	end
 end
 
+local function aptfunc_lupa(pcls, ptop, plen, pval, m, div, nas)
+	return function(spe, d, h)
+		return apt(spe, d, h, pcls, ptop, plen, pval, m, div, nas)
+	end
+end
+
 return {
-	aptfunc = aptfunc
+	aptfunc_fhk = aptfunc_fhk,
+    aptfunc_lupa = aptfunc_lupa
 }
