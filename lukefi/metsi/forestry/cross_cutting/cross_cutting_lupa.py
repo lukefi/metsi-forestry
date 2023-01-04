@@ -4,13 +4,13 @@ import lupa
 import numpy as np
 from lukefi.metsi.data.enums.internal import TreeSpecies
 
-from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VOLUME, \
-    ZERO_DIAMETER_TREE_VALUE
 from pathlib import Path
 
 CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]
 
+
 def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
+    """Produce a cross-cut wrapper function intialized with the crosscut.lua script using the Lupa bindings."""
     path = Path(__file__).parent.parent.resolve() / "lua" / "crosscut.lua"
 
     with open(path, "r") as file:
@@ -33,11 +33,6 @@ def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
             d: float,
             h: float
     ):
-        if d is not None and d < 0:
-            raise ValueError("breast_height_diameter must be a non-negative number")
-        if d in (None, 0):
-            return (np.array([ZERO_DIAMETER_TREE_TIMBER_GRADE]), np.array([ZERO_DIAMETER_TREE_VOLUME]), np.array([ZERO_DIAMETER_TREE_VALUE]))
-
         vol, val = aptfunc(spe, d, h)
         return list(map(int, np.unique(P[:, 0]))), list(vol.values()), list(val.values())
     return cc

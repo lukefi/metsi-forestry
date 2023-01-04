@@ -6,10 +6,8 @@ from lukefi.metsi.data.model import TreeSpecies
 import fhk
 import numpy as np
 
-from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VOLUME, \
-    ZERO_DIAMETER_TREE_VALUE
-
 CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]
+
 
 @dataclass
 class Args:
@@ -17,16 +15,20 @@ class Args:
     d: float
     h: float
 
+
 def ltab(xs: Iterable[float]) -> str:
     return f"{{ {', '.join(map(str, xs))} }}"
+
 
 # operator.attrgetter but inspectable
 def attrgetter(attr: str) -> Callable:
     return lambda o: getattr(o, attr)
 
+
 def definevars(graph: fhk.Graph):
     for field in fields(Args):
         graph.add_given(field.name, attrgetter(field.name))
+
 
 def defineapt(graph: fhk.Graph, P: np.ndarray, retnames: Iterable[str], div: float = 10):
     nas = np.unique(P[:,0])
@@ -54,14 +56,17 @@ def defineapt(graph: fhk.Graph, P: np.ndarray, retnames: Iterable[str], div: flo
         }}
     """)
 
+
 def queryclass(retnames: Iterable[str]) -> type:
     return make_dataclass(
         "Query",
         [(name, float, field(default=fhk.root(name))) for name in retnames]
     )
 
+
 def cross_cut_fhk(P: np.ndarray) -> CrossCutFn:
-    nas = list(map(int, np.unique(P[:,0])))
+    """Produce a cross-cut wrapper function intialized with the crosscut.lua script in the FHK graph solver."""
+    nas = list(map(int, np.unique(P[:, 0])))
     retnames = []
     for v in nas:
         retnames.append(f"val{v}")
@@ -70,16 +75,13 @@ def cross_cut_fhk(P: np.ndarray) -> CrossCutFn:
         definevars(g)
         defineapt(g, P, retnames)
         query = g.query(queryclass(retnames))
+
     def cc(
         spe: TreeSpecies,
         d: float,
         h: float,
         mem: Optional[fhk.Mem] = None
     ) -> tuple[Sequence[int], Sequence[float], Sequence[float]]:
-        if d is not None and d < 0:
-            raise ValueError("breast_height_diameter must be a non-negative number")
-        if d in (None, 0):
-            return (np.array([ZERO_DIAMETER_TREE_TIMBER_GRADE]), np.array([ZERO_DIAMETER_TREE_VOLUME]), np.array([ZERO_DIAMETER_TREE_VALUE]))
         r = query(Args(spe=spe, d=d, h=round(h)), mem=mem)
         vol, val = [], []
         for i in range(0, len(retnames), 2):

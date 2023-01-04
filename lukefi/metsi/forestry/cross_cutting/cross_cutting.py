@@ -1,7 +1,9 @@
+from typing import Callable, Sequence
 import numpy as np
 from lukefi.metsi.data.enums.internal import TreeSpecies
-
 from lukefi.metsi.forestry.cross_cutting import stem_profile
+from lukefi.metsi.forestry.cross_cutting.cross_cutting_fhk import cross_cut_fhk
+from lukefi.metsi.forestry.cross_cutting.cross_cutting_lupa import cross_cut_lupa
 
 _cross_cut_species_mapper = {
     TreeSpecies.PINE: "pine",
@@ -11,9 +13,8 @@ _cross_cut_species_mapper = {
     TreeSpecies.SILVER_BIRCH: "birch"
 }
 
-ZERO_DIAMETER_TREE_TIMBER_GRADE = 3 # = energy wood
-ZERO_DIAMETER_TREE_VOLUME = 0.000045 # m3
-ZERO_DIAMETER_TREE_VALUE = 20 #€/m3
+ZERO_DIAMETER_DEFAULTS = ([3], [0.000045], [20])
+CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]
 
 
 def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -75,23 +76,8 @@ def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) ->
     return (nas, volumes, values) #deviating from the R implementation a little bit by also returning `nas`, the list of unique timber grades.
 
 
-def cross_cut(
-        species: TreeSpecies,
-        breast_height_diameter: float,
-        height: float, 
-        timber_price_table,
-        div = 10
-        ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Returns a tuple containing unique timber grades and their respective volumes and values.
-    If :breast_height_diameter: is 0 or none, the Nasberg cross cutting algorithm can't be applied. 
-    In this case, returns hardcoded constants.
-    """
-    if breast_height_diameter is not None and breast_height_diameter < 0:
-        raise ValueError("breast_height_diameter must be a non-negative number")
-    if breast_height_diameter in (None, 0):
-        return (np.array([ZERO_DIAMETER_TREE_TIMBER_GRADE]), np.array([ZERO_DIAMETER_TREE_VOLUME]), np.array([ZERO_DIAMETER_TREE_VALUE]))
-    else:
+def cross_cut_py(timber_price_table, div = 10) -> CrossCutFn:
+    def cc(species: TreeSpecies, breast_height_diameter, height):
         species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
         #the original cross-cut scripts rely on the height being an integer, thus rounding.
         height = round(height)
@@ -101,3 +87,30 @@ def cross_cut(
         m = P.shape[0]
 
         return apteeraus_Nasberg(T, P, m, n, div)
+    return cc
+
+
+def cross_cut(
+        species: TreeSpecies,
+        breast_height_diameter: float,
+        height: float, 
+        timber_price_table,
+        div=10,
+        impl: str = "py"
+        ) -> tuple[Sequence[int], Sequence[float], Sequence[float]]:
+    """
+    Returns a tuple containing unique timber grades and their respective volumes and values.
+    If :breast_height_diameter: is 0 or none, the Nasberg cross-cutting algorithm can't be applied.
+    In this case, returns hardcoded constants.
+    """
+    if breast_height_diameter is not None and breast_height_diameter < 0:
+        raise ValueError("breast_height_diameter must be a non-negative number")
+    if breast_height_diameter in (None, 0):
+        return ZERO_DIAMETER_DEFAULTS
+    if impl in ("fhk", "lua"):
+        cc = cross_cut_fhk(timber_price_table)
+    elif impl == "lupa":
+        cc = cross_cut_lupa(timber_price_table)
+    else:
+        cc = cross_cut_py(timber_price_table, div)
+    return cc(species, breast_height_diameter, height)

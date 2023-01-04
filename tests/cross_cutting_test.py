@@ -8,9 +8,8 @@ from parameterized import parameterized
 
 
 from lukefi.metsi.forestry.cross_cutting import cross_cutting
-from lukefi.metsi.forestry.cross_cutting.cross_cutting import (
-    ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VALUE,
-    ZERO_DIAMETER_TREE_VOLUME)
+from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_DEFAULTS
+
 from tests.test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
 from lukefi.metsi.forestry.cross_cutting.cross_cutting_lupa import cross_cut_lupa
 
@@ -65,7 +64,7 @@ class CrossCuttingTest(TestCaseExtension):
         for dbh in [0, None]:
             unique_timber_grades, volumes, values = cross_cutting.cross_cut(TreeSpecies.PINE, dbh, 10, DEFAULT_TIMBER_PRICE_TABLE)
             self.assertTrue(len(unique_timber_grades) == len(volumes) == len(values) == 1)
-            self.assertEqual(unique_timber_grades[0], ZERO_DIAMETER_TREE_TIMBER_GRADE)
-            self.assertEqual(volumes[0], ZERO_DIAMETER_TREE_VOLUME)
-            self.assertEqual(values[0], ZERO_DIAMETER_TREE_VALUE)
+            self.assertEqual(unique_timber_grades[0], ZERO_DIAMETER_DEFAULTS[0][0])
+            self.assertEqual(volumes[0], ZERO_DIAMETER_DEFAULTS[1][0])
+            self.assertEqual(values[0], ZERO_DIAMETER_DEFAULTS[2][0])
         self.assertRaises(ValueError, cross_cutting.cross_cut, *(TreeSpecies.PINE, -1, 10, DEFAULT_TIMBER_PRICE_TABLE))
