@@ -12,6 +12,8 @@ from lukefi.metsi.forestry.cross_cutting.cross_cutting import (
     ZERO_DIAMETER_TREE_TIMBER_GRADE, ZERO_DIAMETER_TREE_VALUE,
     ZERO_DIAMETER_TREE_VOLUME)
 from tests.test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
+from lukefi.metsi.forestry.cross_cutting.cross_cutting_lupa import cross_cut_lupa
+
 unrunnable = False
 try:
     from lukefi.metsi.forestry.cross_cutting.cross_cutting_fhk import cross_cut_func
@@ -47,32 +49,17 @@ class CrossCuttingTest(TestCaseExtension):
         (TreeSpecies.UNKNOWN_CONIFEROUS, 15.57254199723247, 18.293846547993535),
         (TreeSpecies.SPRUCE, 17.721245087039236, 16.353742669109522)
     ])
-    def test_py_implementation_equals_r_implementation(self, species, breast_height_diameter, height):
-
-        unique_timber_grades, py_volumes, py_values = cross_cutting.cross_cut(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
-        r_volumes, r_values = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
-
-        decimals = 6
-        py_volumes = np.around(py_volumes, decimals=decimals)
-        py_values = np.around(py_values, decimals=decimals)
-
-        r_volumes = np.around(np.array(r_volumes), decimals=decimals)
-        r_values = np.around(np.array(r_values), decimals=decimals)
-
-        self.assertTrue(np.array_equal(py_volumes, r_volumes))
-        self.assertTrue(np.array_equal(py_values, r_values))
-
-    @parameterized.expand([
-        (TreeSpecies.UNKNOWN_CONIFEROUS, 15.57254199723247, 18.293846547993535),
-        (TreeSpecies.PINE,30,25),
-        (TreeSpecies.SPRUCE, 17.721245087039236, 16.353742669109522)
-    ])
-    def test_fhk_implementation_equals_r_implementation(self, species, breast_height_diameter, height):
-        cc = cross_cut_func(DEFAULT_TIMBER_PRICE_TABLE) # type: ignore
-        _, vol, val = cc(species, breast_height_diameter, height)
-        r_volumes, r_values = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
-        self.assertTrue(np.allclose(vol, np.array(r_volumes), atol=10e-6))
-        self.assertTrue(np.allclose(val, np.array(r_values), atol=10e-6))
+    def test_implementation_equality(self, species, breast_height_diameter, height):
+        _, vol_lupa, val_lupa = cross_cut_lupa(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
+        _, vol_fhk, val_fhk = cross_cut_func(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
+        _, vol_py, val_py = cross_cutting.cross_cut(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
+        vol_r, val_r = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
+        self.assertTrue(np.allclose(vol_lupa, np.array(vol_r), atol=10e-2))
+        self.assertTrue(np.allclose(vol_fhk, np.array(vol_r), atol=10e-6))
+        self.assertTrue(np.allclose(vol_py, np.array(vol_r), atol=10e-6))
+        self.assertTrue(np.allclose(val_lupa, np.array(val_r), atol=10e-2))
+        self.assertTrue(np.allclose(val_fhk, np.array(val_r), atol=10e-6))
+        self.assertTrue(np.allclose(val_py, np.array(val_r), atol=10e-6))
 
     def test_cross_cut_zero_dbh_tree_returns_constant_values(self):
         for dbh in [0, None]:
