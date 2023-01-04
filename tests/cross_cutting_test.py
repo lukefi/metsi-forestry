@@ -16,7 +16,7 @@ from lukefi.metsi.forestry.cross_cutting.cross_cutting_lupa import cross_cut_lup
 
 unrunnable = False
 try:
-    from lukefi.metsi.forestry.cross_cutting.cross_cutting_fhk import cross_cut_func
+    from lukefi.metsi.forestry.cross_cutting.cross_cutting_fhk import cross_cut_fhk
     import rpy2.robjects as robjects
     import lukefi.metsi.forestry.r_utils as r_utils
 except ImportError:
@@ -51,7 +51,7 @@ class CrossCuttingTest(TestCaseExtension):
     ])
     def test_implementation_equality(self, species, breast_height_diameter, height):
         _, vol_lupa, val_lupa = cross_cut_lupa(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
-        _, vol_fhk, val_fhk = cross_cut_func(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
+        _, vol_fhk, val_fhk = cross_cut_fhk(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
         _, vol_py, val_py = cross_cutting.cross_cut(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
         vol_r, val_r = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
         self.assertTrue(np.allclose(vol_lupa, np.array(vol_r), atol=10e-2))

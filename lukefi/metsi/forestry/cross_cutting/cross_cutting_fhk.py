@@ -60,7 +60,7 @@ def queryclass(retnames: Iterable[str]) -> type:
         [(name, float, field(default=fhk.root(name))) for name in retnames]
     )
 
-def cross_cut_func(P: np.ndarray) -> CrossCutFn:
+def cross_cut_fhk(P: np.ndarray) -> CrossCutFn:
     nas = list(map(int, np.unique(P[:,0])))
     retnames = []
     for v in nas:
