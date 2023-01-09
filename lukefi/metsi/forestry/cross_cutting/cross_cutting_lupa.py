@@ -33,6 +33,6 @@ def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
             d: float,
             h: float
     ):
-        vol, val = aptfunc(spe, d, h)
+        vol, val = aptfunc(spe, d, round(h))
         return list(map(int, np.unique(P[:, 0]))), list(vol.values()), list(val.values())
     return cc

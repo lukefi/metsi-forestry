@@ -53,10 +53,10 @@ class CrossCuttingTest(TestCaseExtension):
         _, vol_fhk, val_fhk = cross_cut_fhk(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
         _, vol_py, val_py = cross_cutting.cross_cut(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
         vol_r, val_r = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
-        self.assertTrue(np.allclose(vol_lupa, np.array(vol_r), atol=10e-2))
+        self.assertTrue(np.allclose(vol_lupa, np.array(vol_r), atol=10e-6))
         self.assertTrue(np.allclose(vol_fhk, np.array(vol_r), atol=10e-6))
         self.assertTrue(np.allclose(vol_py, np.array(vol_r), atol=10e-6))
-        self.assertTrue(np.allclose(val_lupa, np.array(val_r), atol=10e-2))
+        self.assertTrue(np.allclose(val_lupa, np.array(val_r), atol=10e-6))
         self.assertTrue(np.allclose(val_fhk, np.array(val_r), atol=10e-6))
         self.assertTrue(np.allclose(val_py, np.array(val_r), atol=10e-6))
 
