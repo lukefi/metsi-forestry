@@ -6,9 +6,7 @@ import numpy as np
 from lukefi.metsi.data.enums.internal import TreeSpecies
 from parameterized import parameterized
 
-
-from lukefi.metsi.forestry.cross_cutting import cross_cutting
-from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_DEFAULTS
+from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_DEFAULTS, cross_cut_py, cross_cut, _cross_cut_species_mapper
 
 from tests.test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
 from lukefi.metsi.forestry.cross_cutting.cross_cutting_lupa import cross_cut_lupa
@@ -28,13 +26,13 @@ class CrossCuttingTest(TestCaseExtension):
         self,
         species: TreeSpecies,
         breast_height_diameter: float,
-        height: float, 
+        height: float,
         timber_price_table,
-        div = 10    
+        div = 10
         ) -> tuple[Dict, Dict]:
         """This function is used only to to test the python-ported version of the cross-cutting scripts against the original R version."""
 
-        species_string = cross_cutting._cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
+        species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
         height = round(height)
 
         r = robjects.r
@@ -51,7 +49,7 @@ class CrossCuttingTest(TestCaseExtension):
     def test_implementation_equality(self, species, breast_height_diameter, height):
         _, vol_lupa, val_lupa = cross_cut_lupa(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
         _, vol_fhk, val_fhk = cross_cut_fhk(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
-        _, vol_py, val_py = cross_cutting.cross_cut(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
+        _, vol_py, val_py = cross_cut_py(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
         vol_r, val_r = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
         self.assertTrue(np.allclose(vol_lupa, np.array(vol_r), atol=10e-6))
         self.assertTrue(np.allclose(vol_fhk, np.array(vol_r), atol=10e-6))
@@ -62,9 +60,9 @@ class CrossCuttingTest(TestCaseExtension):
 
     def test_cross_cut_zero_dbh_tree_returns_constant_values(self):
         for dbh in [0, None]:
-            unique_timber_grades, volumes, values = cross_cutting.cross_cut(TreeSpecies.PINE, dbh, 10, DEFAULT_TIMBER_PRICE_TABLE)
+            unique_timber_grades, volumes, values = cross_cut(TreeSpecies.PINE, dbh, 10, DEFAULT_TIMBER_PRICE_TABLE)
             self.assertTrue(len(unique_timber_grades) == len(volumes) == len(values) == 1)
             self.assertEqual(unique_timber_grades[0], ZERO_DIAMETER_DEFAULTS[0][0])
             self.assertEqual(volumes[0], ZERO_DIAMETER_DEFAULTS[1][0])
             self.assertEqual(values[0], ZERO_DIAMETER_DEFAULTS[2][0])
-        self.assertRaises(ValueError, cross_cutting.cross_cut, *(TreeSpecies.PINE, -1, 10, DEFAULT_TIMBER_PRICE_TABLE))
+        self.assertRaises(ValueError, cross_cut, *(TreeSpecies.PINE, -1, 10, DEFAULT_TIMBER_PRICE_TABLE))
