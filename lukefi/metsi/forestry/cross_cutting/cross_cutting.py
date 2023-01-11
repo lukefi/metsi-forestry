@@ -94,7 +94,7 @@ def cross_cut(
         species: TreeSpecies,
         breast_height_diameter: float,
         height: float,
-        timber_price_table,
+        P: np.ndarray,
         div=10,
         impl: str = "py"
         ) -> tuple[Sequence[int], Sequence[float], Sequence[float]]:
@@ -108,9 +108,9 @@ def cross_cut(
     if breast_height_diameter in (None, 0):
         return ZERO_DIAMETER_DEFAULTS
     if impl in ("fhk", "lua"):
-        cc = cross_cut_fhk(timber_price_table)
+        cc = cross_cut_fhk(tuple(P[:, 0]), tuple(P[:, 1]), tuple(P[:, 2]), tuple(P[:, 3]), P.shape[0], div, tuple(np.unique(P[:, 0])))
     elif impl == "lupa":
-        cc = cross_cut_lupa(timber_price_table)
+        cc = cross_cut_lupa(tuple(P[:, 0]), tuple(P[:, 1]), tuple(P[:, 2]), tuple(P[:, 3]), P.shape[0], div, tuple(np.unique(P[:, 0])))
     else:
-        cc = cross_cut_py(timber_price_table, div)
+        cc = cross_cut_py(P, div)
     return cc(species, breast_height_diameter, height)

@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field, fields, make_dataclass
+from functools import cache
 from json import dumps
 from pathlib import Path
 from typing import Callable, Iterable, Optional, Sequence
 from lukefi.metsi.data.model import TreeSpecies
 import fhk
-import numpy as np
 
 CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]
 
@@ -30,8 +30,7 @@ def definevars(graph: fhk.Graph):
         graph.add_given(field.name, attrgetter(field.name))
 
 
-def defineapt(graph: fhk.Graph, P: np.ndarray, retnames: Iterable[str], div: float = 10):
-    nas = np.unique(P[:,0])
+def defineapt(graph: fhk.Graph, pcls, ptop, plen, pval, m, div, nas, retnames: Iterable[str]):
     path = dumps(str(Path(__file__).parent.parent.resolve() / "lua" / "?.lua"))
     rv = " ".join(retnames)
     graph.ldef(f"""
@@ -43,11 +42,11 @@ def defineapt(graph: fhk.Graph, P: np.ndarray, retnames: Iterable[str], div: flo
                 "crosscut",
                 load = function(pkg)
                     return pkg.aptfunc_fhk(
-                        {ltab(P[:,0])},
-                        {ltab(P[:,1])},
-                        {ltab(P[:,2])},
-                        {ltab(P[:,3])},
-                        {P.shape[0]},
+                        {ltab(pcls)},
+                        {ltab(ptop)},
+                        {ltab(plen)},
+                        {ltab(pval)},
+                        {m},
                         {div},
                         {len(nas)}
                     )
@@ -64,16 +63,16 @@ def queryclass(retnames: Iterable[str]) -> type:
     )
 
 
-def cross_cut_fhk(P: np.ndarray) -> CrossCutFn:
+@cache
+def cross_cut_fhk(pcls, ptop, plen, pval, m, div, nas) -> CrossCutFn:
     """Produce a cross-cut wrapper function intialized with the crosscut.lua script in the FHK graph solver."""
-    nas = list(map(int, np.unique(P[:, 0])))
     retnames = []
     for v in nas:
-        retnames.append(f"val{v}")
-        retnames.append(f"vol{v}")
+        retnames.append(f"val{int(v)}")
+        retnames.append(f"vol{int(v)}")
     with fhk.Graph() as g:
         definevars(g)
-        defineapt(g, P, retnames)
+        defineapt(g, pcls, ptop, plen, pval, m, div, nas, retnames)
         query = g.query(queryclass(retnames))
 
     def cc(

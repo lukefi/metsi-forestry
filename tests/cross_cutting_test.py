@@ -1,15 +1,10 @@
 from typing import Dict
 import unittest
-
 import numpy as np
-
 from lukefi.metsi.data.enums.internal import TreeSpecies
 from parameterized import parameterized
-
-from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_DEFAULTS, cross_cut_py, cross_cut, _cross_cut_species_mapper
-
+from lukefi.metsi.forestry.cross_cutting.cross_cutting import ZERO_DIAMETER_DEFAULTS, cross_cut, _cross_cut_species_mapper
 from tests.test_util import DEFAULT_TIMBER_PRICE_TABLE, TestCaseExtension
-from lukefi.metsi.forestry.cross_cutting.cross_cutting_lupa import cross_cut_lupa
 
 unrunnable = False
 try:
@@ -47,9 +42,10 @@ class CrossCuttingTest(TestCaseExtension):
         (TreeSpecies.SPRUCE, 17.721245087039236, 16.353742669109522)
     ])
     def test_implementation_equality(self, species, breast_height_diameter, height):
-        _, vol_lupa, val_lupa = cross_cut_lupa(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
-        _, vol_fhk, val_fhk = cross_cut_fhk(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
-        _, vol_py, val_py = cross_cut_py(DEFAULT_TIMBER_PRICE_TABLE)(species, breast_height_diameter, height)
+        P = DEFAULT_TIMBER_PRICE_TABLE
+        _, vol_lupa, val_lupa = cross_cut(species, breast_height_diameter, height, P, 10, "lupa")
+        _, vol_fhk, val_fhk = cross_cut(species, breast_height_diameter, height, P, 10, "fhk")
+        _, vol_py, val_py = cross_cut(species, breast_height_diameter, height, P, 10, "py")
         vol_r, val_r = self._cross_cut_with_r(species, breast_height_diameter, height, DEFAULT_TIMBER_PRICE_TABLE)
         self.assertTrue(np.allclose(vol_lupa, np.array(vol_r), atol=10e-6))
         self.assertTrue(np.allclose(vol_fhk, np.array(vol_r), atol=10e-6))

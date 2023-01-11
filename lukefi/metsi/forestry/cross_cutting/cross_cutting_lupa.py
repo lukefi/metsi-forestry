@@ -1,7 +1,7 @@
+from functools import cache
 from typing import Callable, Sequence
 
 import lupa
-import numpy as np
 from lukefi.metsi.data.enums.internal import TreeSpecies
 
 from pathlib import Path
@@ -9,7 +9,8 @@ from pathlib import Path
 CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]
 
 
-def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
+@cache
+def cross_cut_lupa(_pcls, _ptop, _plen, _pval, m, div, nas):
     """Produce a cross-cut wrapper function intialized with the crosscut.lua script using the Lupa bindings."""
     path = Path(__file__).parent.parent.resolve() / "lua" / "crosscut.lua"
 
@@ -18,15 +19,11 @@ def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
 
     lua = lupa.LuaRuntime(unpack_returned_tuples=True)
     fn = lua.execute(script)['aptfunc_lupa']
-    pcls = lua.table_from(P[:, 0])
-    ptop = lua.table_from(P[:, 1])
-    plen = lua.table_from(P[:, 2])
-    pval = lua.table_from(P[:, 3])
-    m = P.shape[0]
-    div = 10
-    nas = np.unique(P[:, 0])
-
-    aptfunc = fn(pcls, ptop, plen, pval, m, div, len(nas))
+    _pcls = lua.table_from(_pcls)
+    _ptop = lua.table_from(_ptop)
+    _plen = lua.table_from(_plen)
+    _pval = lua.table_from(_pval)
+    aptfunc = fn(_pcls, _ptop, _plen, _pval, m, div, len(nas))
 
     def cc(
             spe: TreeSpecies,
@@ -34,5 +31,5 @@ def cross_cut_lupa(P: np.ndarray) -> CrossCutFn:
             h: float
     ):
         vol, val = aptfunc(spe, d, round(h))
-        return list(map(int, np.unique(P[:, 0]))), list(vol.values()), list(val.values())
+        return list(map(int, nas)), list(vol.values()), list(val.values())
     return cc
