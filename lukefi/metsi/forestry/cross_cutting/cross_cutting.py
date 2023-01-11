@@ -13,7 +13,7 @@ _cross_cut_species_mapper = {
     TreeSpecies.SILVER_BIRCH: "birch"
 }
 
-ZERO_DIAMETER_DEFAULTS = ([3], [0.000045], [20])
+ZERO_DIAMETER_DEFAULTS = ([3], [0.000045], [20])  # energy wood, m3, €/m3; values from Reijo Mykkänen
 CrossCutFn = Callable[..., tuple[Sequence[int], Sequence[float], Sequence[float]]]
 
 
@@ -43,7 +43,7 @@ def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) ->
             if t < n:
                 d_top = T[t,0]
                 d_min = P[j, 1]
-                
+
                 if d_top >= d_min:
                     v = T[t,2] - T[i,2]
                     c = v * P[j, 3]
@@ -55,7 +55,7 @@ def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) ->
                         C[t] = c_tot
                         A[t] = P[j, 0]
                         L[t] = i
-                    
+
     maxi = np.argmax(C)
 
     nas = np.unique(P[:, 0])
@@ -93,7 +93,7 @@ def cross_cut_py(timber_price_table, div = 10) -> CrossCutFn:
 def cross_cut(
         species: TreeSpecies,
         breast_height_diameter: float,
-        height: float, 
+        height: float,
         timber_price_table,
         div=10,
         impl: str = "py"
