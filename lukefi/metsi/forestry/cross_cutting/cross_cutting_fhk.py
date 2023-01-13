@@ -30,7 +30,7 @@ def definevars(graph: fhk.Graph):
         graph.add_given(field.name, attrgetter(field.name))
 
 
-def defineapt(graph: fhk.Graph, pcls, ptop, plen, pval, m, div, nas, retnames: Iterable[str]):
+def defineapt(graph: fhk.Graph, constants: tuple[tuple], div, retnames: Iterable[str]):
     path = dumps(str(Path(__file__).parent.parent.resolve() / "lua" / "?.lua"))
     rv = " ".join(retnames)
     graph.ldef(f"""
@@ -42,13 +42,13 @@ def defineapt(graph: fhk.Graph, pcls, ptop, plen, pval, m, div, nas, retnames: I
                 "crosscut",
                 load = function(pkg)
                     return pkg.aptfunc_fhk(
-                        {ltab(pcls)},
-                        {ltab(ptop)},
-                        {ltab(plen)},
-                        {ltab(pval)},
-                        {m},
+                        {ltab(constants[0])},
+                        {ltab(constants[1])},
+                        {ltab(constants[2])},
+                        {ltab(constants[3])},
+                        {len(constants[0])},
                         {div},
-                        {len(nas)}
+                        {len(set(constants[0]))}
                     )
                 end
             }}
@@ -64,15 +64,15 @@ def queryclass(retnames: Iterable[str]) -> type:
 
 
 @cache
-def cross_cut_fhk(pcls, ptop, plen, pval, m, div, nas) -> CrossCutFn:
+def cross_cut_fhk(constants: tuple[tuple], div=10) -> CrossCutFn:
     """Produce a cross-cut wrapper function intialized with the crosscut.lua script in the FHK graph solver."""
     retnames = []
-    for v in nas:
+    for v in set(constants[0]):
         retnames.append(f"val{int(v)}")
         retnames.append(f"vol{int(v)}")
     with fhk.Graph() as g:
         definevars(g)
-        defineapt(g, pcls, ptop, plen, pval, m, div, nas, retnames)
+        defineapt(g, constants, div, retnames)
         query = g.query(queryclass(retnames))
 
     def cc(
@@ -86,5 +86,5 @@ def cross_cut_fhk(pcls, ptop, plen, pval, m, div, nas) -> CrossCutFn:
         for i in range(0, len(retnames), 2):
             vol.append(getattr(r, retnames[i]))
             val.append(getattr(r, retnames[i+1]))
-        return nas, vol, val # type: ignore
+        return list(set(constants[0])), vol, val # type: ignore
     return cc

@@ -76,14 +76,14 @@ def apteeraus_Nasberg(T: np.ndarray, P: np.ndarray, m: int, n: int, div: int) ->
     return (nas, volumes, values) #deviating from the R implementation a little bit by also returning `nas`, the list of unique timber grades.
 
 
-def cross_cut_py(timber_price_table, div = 10) -> CrossCutFn:
+def cross_cut_py(constants: tuple[tuple], div = 10) -> CrossCutFn:
     def cc(species: TreeSpecies, breast_height_diameter, height):
         species_string = _cross_cut_species_mapper.get(species, "birch") #birch is used as the default species in cross cutting
         #the original cross-cut scripts rely on the height being an integer, thus rounding.
         height = round(height)
         n = int((height*100)/div-1)
         T = stem_profile.create_tree_stem_profile(species_string, breast_height_diameter, height, n)
-        P = timber_price_table
+        P = np.array([*constants]).transpose()
         m = P.shape[0]
 
         return apteeraus_Nasberg(T, P, m, n, div)
@@ -94,7 +94,7 @@ def cross_cut(
         species: TreeSpecies,
         breast_height_diameter: float,
         height: float,
-        P: np.ndarray,
+        constants: tuple[tuple],
         div=10,
         impl: str = "py"
         ) -> tuple[Sequence[int], Sequence[float], Sequence[float]]:
@@ -108,9 +108,9 @@ def cross_cut(
     if breast_height_diameter in (None, 0):
         return ZERO_DIAMETER_DEFAULTS
     if impl in ("fhk", "lua"):
-        cc = cross_cut_fhk(tuple(P[:, 0]), tuple(P[:, 1]), tuple(P[:, 2]), tuple(P[:, 3]), P.shape[0], div, tuple(np.unique(P[:, 0])))
+        cc = cross_cut_fhk(constants)
     elif impl == "lupa":
-        cc = cross_cut_lupa(tuple(P[:, 0]), tuple(P[:, 1]), tuple(P[:, 2]), tuple(P[:, 3]), P.shape[0], div, tuple(np.unique(P[:, 0])))
+        cc = cross_cut_lupa(constants)
     else:
-        cc = cross_cut_py(P, div)
+        cc = cross_cut_py(constants, div)
     return cc(species, breast_height_diameter, height)
