@@ -1,7 +1,7 @@
 [project]
 name = "lukefi.metsi.forestry"
 description = "Models and functions for forestry computation."
-version = "1.0.3"
+version = "1.0.4"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
@@ -15,7 +15,7 @@ authors = [
 dependencies = [
     "scipy==1.7.3",
     "lupa==1.14.1",
-    "lukefi.metsi.data @ https://github.com/lukefi/metsi-data/archive/refs/tags/1.0.1.zip",
+    "lukefi.metsi.data @ https://github.com/lukefi/metsi-data/archive/refs/tags/1.0.2.zip",
     "fhk @ https://github.com/menu-hanke/fhk/releases/download/v4.0.0/fhk-4.0.0-cp310-cp310-win_amd64.whl ; platform_system=='Windows' and python_version=='3.10'",
     "fhk @ https://github.com/menu-hanke/fhk/releases/download/v4.0.0/fhk-4.0.0-cp311-cp311-win_amd64.whl ; platform_system=='Windows' and python_version=='3.11'",
     "fhk @ https://github.com/menu-hanke/fhk/releases/download/v4.0.0/fhk-4.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl ; platform_system=='Linux' and python_version=='3.10'",
