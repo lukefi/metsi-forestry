@@ -1,3 +1,8 @@
+# DISCONTINUED
+
+Library hsa been internalized into [Metsi](https://github.com/lukefi/metsi). Librarized development will continue later
+with better defined library responsibilities and interface boundaries between components.
+
 # Metsi forestry utilities
 
 Metsi forestry utilities is a library forest related growth and forestry operations functions. It is primarily used as
